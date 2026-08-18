@@ -201,7 +201,10 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
                             aria-label="Chọn phôi Ngưu Lai số <?php echo esc_attr( $tpl_num ); ?>" 
                             aria-pressed="<?php echo $is_active ? 'true' : 'false'; ?>">
                         <img src="<?php echo esc_url( $tpl_url ); ?>" alt="Ngưu Lai Mẫu <?php echo esc_attr( $tpl_num ); ?>" loading="lazy" />
-                        <span><?php echo $is_active ? 'Đang chọn' : 'Dùng mẫu này'; ?></span>
+                        <span class="tpl-badge-text"><?php echo $is_active ? 'Đang chọn' : 'Dùng mẫu này'; ?></span>
+                        <span class="tpl-badge-tick" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        </span>
                     </button>
                 <?php endforeach; ?>
             </div>

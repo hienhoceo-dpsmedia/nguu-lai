@@ -320,7 +320,7 @@
                     const isActive = btnIndex === templateIndex;
                     button.classList.toggle('is-active', isActive);
                     button.setAttribute('aria-pressed', String(isActive));
-                    const span = button.querySelector('span');
+                    const span = button.querySelector('.tpl-badge-text') || button.querySelector('span');
                     if (span) {
                         span.textContent = isActive ? (data.i18n && data.i18n.current ? data.i18n.current : 'Đang chọn') : (data.i18n && data.i18n.use ? data.i18n.use : 'Dùng mẫu này');
                     }

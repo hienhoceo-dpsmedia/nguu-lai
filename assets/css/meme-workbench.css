@@ -506,7 +506,7 @@
     box-shadow: 0 0 0 2px var(--nl-red);
 }
 
-.meme-template-grid span {
+.meme-template-grid .tpl-badge-text {
     position: absolute;
     right: 4px;
     bottom: 4px;
@@ -518,10 +518,32 @@
     background: rgba(25, 27, 24, 0.85);
     border-radius: 3px;
     text-align: center;
+    transition: all 180ms ease;
 }
 
-.meme-template-grid button.is-active span {
+.meme-template-grid button.is-active .tpl-badge-text {
     background: var(--nl-red);
+}
+
+.tpl-badge-tick {
+    display: none;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 22px;
+    height: 22px;
+    background: var(--nl-red);
+    color: #ffffff;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    border: 1.5px solid #ffffff;
+    z-index: 2;
+}
+
+.meme-template-grid button.is-active .tpl-badge-tick {
+    display: flex;
 }
 
 /* ==========================================================================
@@ -856,6 +878,29 @@
     .meme-template-grid {
         grid-template-columns: repeat(4, 1fr);
         gap: 8px;
+    }
+
+    /* Ẩn text banner trên mobile để ảnh không bị che và hiển thị trọn vẹn khuôn mặt */
+    .meme-template-grid .tpl-badge-text {
+        display: none !important;
+    }
+
+    .meme-template-grid button {
+        border-radius: 10px;
+        border-width: 2.5px;
+    }
+
+    .meme-template-grid button.is-active {
+        border-color: var(--nl-red);
+        box-shadow: 0 0 0 2px rgba(212, 67, 50, 0.45);
+        transform: scale(1.03);
+    }
+
+    .tpl-badge-tick {
+        top: 4px;
+        right: 4px;
+        width: 20px;
+        height: 20px;
     }
 
     .phrase-grid {
