@@ -89,7 +89,7 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
         <div class="section-heading section-heading-row">
             <div>
                 <p class="section-index">D / 03</p>
-                <h2><?php echo esc_html( $attributes['title'] ?? 'Để Ngưu Lại Nói Thay Lời Bạn.' ); ?></h2>
+                <h2><?php echo esc_html( $attributes['title'] ?? 'Để Ngưu Lai Nói Thay Lời Bạn.' ); ?></h2>
             </div>
             <p class="section-aside"><?php echo esc_html( $attributes['aside'] ?? 'Chọn một biểu cảm, thêm một dòng chữ, căn chỉnh trực tiếp và xuất ảnh PNG chuẩn 900 × 900.' ); ?></p>
         </div>
@@ -98,7 +98,7 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
         <div class="meme-workbench">
             <div class="meme-preview-wrap">
                 <p class="preview-label">Xem trước trực tiếp</p>
-                <canvas id="meme-canvas" width="900" height="900" aria-label="Trình xem trước meme Ngưu Lại thời gian thực"></canvas>
+                <canvas id="meme-canvas" width="900" height="900" aria-label="Trình xem trước meme Ngưu Lai thời gian thực"></canvas>
             </div>
             
             <div class="meme-controls">
@@ -183,10 +183,10 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
             </div>
         </div>
 
-        <!-- Thư viện 16 Mẫu Ngưu Lại Chuẩn (Hiển thị ngay trên UI) -->
+        <!-- Thư viện 16 Mẫu Ngưu Lai Chuẩn (Hiển thị ngay trên UI) -->
         <div class="meme-library">
             <div class="meme-library-head">
-                <h3>Chọn một biểu cảm Ngưu Lại</h3>
+                <h3>Chọn một biểu cảm Ngưu Lai</h3>
                 <p>16 mẫu biểu cảm chuẩn nét. Đổi ảnh vẫn giữ nguyên câu chữ đang viết.</p>
             </div>
             <div class="meme-template-grid" id="meme-template-grid">
@@ -198,9 +198,9 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
                             class="<?php echo $is_active ? 'is-active' : ''; ?>" 
                             data-index="<?php echo esc_attr( $index ); ?>" 
                             data-src="<?php echo esc_url( $tpl_url ); ?>" 
-                            aria-label="Chọn phôi Ngưu Lại số <?php echo esc_attr( $tpl_num ); ?>" 
+                            aria-label="Chọn phôi Ngưu Lai số <?php echo esc_attr( $tpl_num ); ?>" 
                             aria-pressed="<?php echo $is_active ? 'true' : 'false'; ?>">
-                        <img src="<?php echo esc_url( $tpl_url ); ?>" alt="Ngưu Lại Mẫu <?php echo esc_attr( $tpl_num ); ?>" loading="lazy" />
+                        <img src="<?php echo esc_url( $tpl_url ); ?>" alt="Ngưu Lai Mẫu <?php echo esc_attr( $tpl_num ); ?>" loading="lazy" />
                         <span><?php echo $is_active ? 'Đang chọn' : 'Dùng mẫu này'; ?></span>
                     </button>
                 <?php endforeach; ?>
@@ -235,7 +235,7 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
             
             <div class="modal-header-hero">
                 <div class="modal-avatar-wrap">
-                    <img src="<?php echo esc_url( NGUU_LAI_PLUGIN_URL . 'assets/memes/niulai_01.webp' ); ?>" alt="Ngưu Lại" class="modal-avatar-img" />
+                    <img src="<?php echo esc_url( NGUU_LAI_PLUGIN_URL . 'assets/memes/niulai_01.webp' ); ?>" alt="Ngưu Lai" class="modal-avatar-img" />
                     <span class="modal-avatar-badge">✨</span>
                 </div>
                 <h3 class="modal-title">Đăng nhập với Google</h3>

@@ -27,7 +27,7 @@ class Shortcode {
             'watermark_text'   => null,
             'require_login'    => null,
             'theme'            => 'dark',
-            'title'            => 'Để Ngưu Lại Nói Thay Lời Bạn.',
+            'title'            => 'Để Ngưu Lai Nói Thay Lời Bạn.',
             'aside'            => 'Chọn một biểu cảm, thêm một dòng chữ, căn chỉnh trực tiếp và xuất ảnh PNG chuẩn 900 × 900.',
         ], $raw_atts, 'nguu_lai_meme' );
 
@@ -143,7 +143,7 @@ class Shortcode {
             'initial_text'      => sanitize_text_field( $attributes['default_text'] ),
             'initial_template'  => $initial_template,
             'i18n'              => [
-                'canvas_label'    => 'Trình xem trước meme Ngưu Lại thời gian thực',
+                'canvas_label'    => 'Trình xem trước meme Ngưu Lai thời gian thực',
                 'current'         => 'Đang chọn',
                 'use'             => 'Dùng mẫu này',
                 'download_ready'  => 'Đã tạo và tải meme thành công! 🎉',

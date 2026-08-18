@@ -12,7 +12,7 @@ use WP_REST_Response;
 use NguuLai\Models\Database;
 
 /**
- * Controller xử lý toàn bộ REST API của plugin Ngưu Lại.
+ * Controller xử lý toàn bộ REST API của plugin Ngưu Lai.
  */
 class RestController extends WP_REST_Controller {
 

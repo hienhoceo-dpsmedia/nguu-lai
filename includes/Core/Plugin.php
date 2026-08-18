@@ -12,7 +12,7 @@ use NguuLai\Frontend\FrontendAssets;
 use NguuLai\Api\RestController;
 
 /**
- * Lớp điều phối trung tâm (Singleton) của Plugin Ngưu Lại.
+ * Lớp điều phối trung tâm (Singleton) của Plugin Ngưu Lai.
  */
 class Plugin {
 

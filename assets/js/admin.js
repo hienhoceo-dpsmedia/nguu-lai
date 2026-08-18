@@ -1,5 +1,5 @@
 /**
- * Javascript Bổ trợ Giao diện Quản trị Ngưu Lại.
+ * Javascript Bổ trợ Giao diện Quản trị Ngưu Lai.
  *
  * @package NguuLai
  */

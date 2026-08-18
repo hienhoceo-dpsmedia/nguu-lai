@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class AdminAssets {
 
     public function enqueue_assets( string $hook_suffix ): void {
-        // Chỉ nạp trên trang cấu hình của Ngưu Lại
+        // Chỉ nạp trên trang cấu hình của Ngưu Lai
         if ( false === strpos( $hook_suffix, 'nguu-lai-settings' ) ) {
             return;
         }

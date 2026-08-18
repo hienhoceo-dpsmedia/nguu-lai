@@ -1,6 +1,6 @@
 # Nhật ký Thay đổi (CHANGELOG.md)
 
-Tất cả các thay đổi đáng chú ý của dự án **Ngưu Lại** sẽ được ghi lại trong tài liệu này.
+Tất cả các thay đổi đáng chú ý của dự án **Ngưu Lai** sẽ được ghi lại trong tài liệu này.
 
 Định dạng tài liệu tuân theo chuẩn [Keep a Changelog](https://keepachangelog.com/vi/1.0.0/), và dự án áp dụng quy tắc [Semantic Versioning (SemVer)](https://semver.org/spec/v2.0.0.html).
 

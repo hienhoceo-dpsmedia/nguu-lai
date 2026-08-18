@@ -36,7 +36,7 @@ class Activator {
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         dbDelta( $sql );
 
-        // Bộ Câu thoại tiếng Việt viral thịnh hành cho Ngưu Lại
+        // Bộ Câu thoại tiếng Việt viral thịnh hành cho Ngưu Lai
         $default_phrases = [
             'Tau mà tổn thương thì tbây phải tổn thất',
             'Thấy tui cười đừng nghĩ tui vui, mà thấy tui khóc đừng nghĩ tui buồn.',

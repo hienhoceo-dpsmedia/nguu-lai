@@ -14,8 +14,8 @@ class Settings {
 
     public function register_admin_menu(): void {
         add_menu_page(
-            'Ngưu Lại Meme',
-            'Ngưu Lại Meme',
+            'Ngưu Lai Meme',
+            'Ngưu Lai Meme',
             'manage_options',
             'nguu-lai-settings',
             [ $this, 'render_settings_page' ],

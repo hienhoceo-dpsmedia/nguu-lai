@@ -1,6 +1,6 @@
 <?php
 /**
- * Logic dọn dẹp khi gỡ bỏ cài đặt Plugin Ngưu Lại.
+ * Logic dọn dẹp khi gỡ bỏ cài đặt Plugin Ngưu Lai.
  *
  * @package NguuLai
  */

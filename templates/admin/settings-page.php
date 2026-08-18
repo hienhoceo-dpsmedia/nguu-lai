@@ -1,6 +1,6 @@
 <?php
 /**
- * Giao diện Quản trị Plugin Ngưu Lại 100% Thuần Việt.
+ * Giao diện Quản trị Plugin Ngưu Lai 100% Thuần Việt.
  *
  * @package NguuLai
  */
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="wrap nguu-lai-admin-wrap">
     <div class="nguu-lai-admin-header">
         <div class="header-left">
-            <h1 class="admin-title">🐮 Ngưu Lại — Trình Tạo Meme & Quản Trị</h1>
+            <h1 class="admin-title">🐮 Ngưu Lai — Trình Tạo Meme & Quản Trị</h1>
             <p class="admin-subtitle">Tùy biến shortcode meme, quản lý Google OAuth, thiết lập hạn mức và theo dõi nhật ký thời gian thực.</p>
         </div>
         <div class="header-right">
@@ -119,7 +119,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                         </tr>
                         <tr>
                             <td><code>title</code></td>
-                            <td><code>"Để Ngưu Lại Nói Thay Lời Bạn."</code></td>
+                            <td><code>"Để Ngưu Lai Nói Thay Lời Bạn."</code></td>
                             <td>Tiêu đề chính hiển thị phía trên Bàn làm việc Meme.</td>
                         </tr>
                     </tbody>
@@ -254,7 +254,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
             <div class="nguu-lai-card">
                 <div class="card-header">
-                    <h2>Xem Trước 16 Phôi Ảnh Biểu Cảm Ngưu Lại</h2>
+                    <h2>Xem Trước 16 Phôi Ảnh Biểu Cảm Ngưu Lai</h2>
                     <p>Các phôi ảnh WebP chuẩn được tối ưu siêu nhẹ lưu trữ tại <code>assets/memes/</code>.</p>
                 </div>
                 <div class="admin-template-preview-grid">

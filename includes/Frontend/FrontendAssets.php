@@ -135,7 +135,7 @@ class FrontendAssets {
             'watermark_text'    => $watermark_text,
             'watermark_enabled' => $watermark_enabled,
             'i18n'              => [
-                'canvas_label'    => 'Trình xem trước meme Ngưu Lại thời gian thực',
+                'canvas_label'    => 'Trình xem trước meme Ngưu Lai thời gian thực',
                 'current'         => 'Đang chọn',
                 'use'             => 'Dùng mẫu này',
                 'download_ready'  => 'Đã tạo và tải meme thành công! 🎉',

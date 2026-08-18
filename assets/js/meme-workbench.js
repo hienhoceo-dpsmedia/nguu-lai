@@ -1,5 +1,5 @@
 /**
- * Trình Tạo Meme Ngưu Lại — Canvas 2D Workbench Engine.
+ * Trình Tạo Meme Ngưu Lai — Canvas 2D Workbench Engine.
  * Hỗ trợ chọn 10 Google Fonts chuẩn 100% Tiếng Việt.
  *
  * @package NguuLai
