@@ -513,12 +513,16 @@
             const data = window.nguuLaiData || {};
             if (!data.rest_url) return;
 
-            let templateName = 'custom_upload';
+            let templateName = 'niulai_01.webp';
             if (self.activeTemplateIndex >= 0 && data.templates && data.templates[self.activeTemplateIndex]) {
                 templateName = data.templates[self.activeTemplateIndex].split('/').pop();
+            } else if (self.customUploadUrl) {
+                templateName = 'custom_upload';
             }
 
-            fetch(data.rest_url + '/update-log', {
+            const endpoint = (data.rest_url || '').replace(/\/+$/, '') + '/update-log';
+
+            fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

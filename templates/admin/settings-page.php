@@ -356,8 +356,8 @@ if ( ! defined( 'ABSPATH' ) ) {
                 <div class="card-header-flex">
                     <h2>Danh Sách Nhật Ký Tạo Meme</h2>
                     <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" onsubmit="return confirm('Bạn có chắc chắn muốn xóa toàn bộ nhật ký tạo meme không?');">
-                        <input type="hidden" name="action" value="nguu_lai_clear_logs" />
-                        <?php wp_nonce_field( 'nguu_lai_clear_logs_action', 'nguu_lai_nonce' ); ?>
+                        <input type="hidden" name="action" value="nguu_lai_clear_all_logs" />
+                        <?php wp_nonce_field( 'nguu_lai_clear_all_logs_action', 'nguu_lai_nonce' ); ?>
                         <button type="submit" class="button button-link-delete">🗑️ Xóa sạch nhật ký</button>
                     </form>
                 </div>

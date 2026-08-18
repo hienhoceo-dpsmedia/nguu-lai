@@ -39,6 +39,12 @@ class Plugin {
     }
 
     private function check_migrations(): void {
+        // Đảm bảo cấu trúc database luôn đồng bộ với phiên bản hiện tại
+        if ( get_option( 'nguu_lai_db_version' ) !== '1.0.2' ) {
+            \NguuLai\Models\Database::create_or_migrate_tables();
+            update_option( 'nguu_lai_db_version', '1.0.2' );
+        }
+
         // Tự động cập nhật danh sách câu thoại viral mới nhất nếu chưa nâng cấp phiên bản câu thoại
         if ( get_option( 'nguu_lai_phrases_version' ) !== '2.2' ) {
             $viral_phrases = [

@@ -16,6 +16,55 @@ class Database {
     }
 
     /**
+     * Tự động khởi tạo hoặc nâng cấp cấu trúc bảng Nhật ký khi cần.
+     */
+    public static function create_or_migrate_tables(): void {
+        global $wpdb;
+
+        $table_name      = self::get_table_name();
+        $charset_collate = $wpdb->get_charset_collate();
+
+        $sql = "CREATE TABLE IF NOT EXISTS {$table_name} (
+            id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+            session_id varchar(64) DEFAULT '' NOT NULL,
+            user_id bigint(20) unsigned DEFAULT 0 NOT NULL,
+            ip_address varchar(45) DEFAULT '' NOT NULL,
+            template varchar(100) DEFAULT '' NOT NULL,
+            meme_text text NOT NULL,
+            status varchar(20) DEFAULT 'completed' NOT NULL,
+            debug_context longtext NULL,
+            plugin_version varchar(20) DEFAULT '' NOT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            PRIMARY KEY  (id),
+            KEY user_id (user_id),
+            KEY ip_address (ip_address),
+            KEY template (template),
+            KEY status (status),
+            KEY created_at (created_at)
+        ) $charset_collate;";
+
+        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+        dbDelta( $sql );
+
+        // Tự động kiểm tra & sửa các cột cũ nếu bảng được tạo từ phiên bản trước
+        $existing_columns = $wpdb->get_col( "DESC {$table_name}", 0 );
+        if ( ! empty( $existing_columns ) && is_array( $existing_columns ) ) {
+            if ( in_array( 'template_name', $existing_columns, true ) && ! in_array( 'template', $existing_columns, true ) ) {
+                $wpdb->query( "ALTER TABLE {$table_name} CHANGE template_name template varchar(100) DEFAULT '' NOT NULL" );
+            }
+            if ( ! in_array( 'debug_context', $existing_columns, true ) ) {
+                $wpdb->query( "ALTER TABLE {$table_name} ADD COLUMN debug_context longtext NULL AFTER status" );
+            }
+            if ( ! in_array( 'plugin_version', $existing_columns, true ) ) {
+                $wpdb->query( "ALTER TABLE {$table_name} ADD COLUMN plugin_version varchar(20) DEFAULT '' NOT NULL AFTER debug_context" );
+            }
+            if ( ! in_array( 'template', $existing_columns, true ) ) {
+                $wpdb->query( "ALTER TABLE {$table_name} ADD COLUMN template varchar(100) DEFAULT '' NOT NULL AFTER ip_address" );
+            }
+        }
+    }
+
+    /**
      * Nhận diện IP người dùng an toàn (hỗ trợ Cloudflare & Reverse Proxy).
      */
     public static function get_client_ip(): string {
@@ -158,6 +207,26 @@ class Database {
             [ '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s' ]
         );
 
+        // Nếu bảng chưa có hoặc lỗi cấu trúc, tự động sửa và thử lại
+        if ( false === $result ) {
+            self::create_or_migrate_tables();
+            $result = $wpdb->insert(
+                $table,
+                [
+                    'session_id'     => $session_id,
+                    'user_id'        => $user_id,
+                    'ip_address'     => $ip,
+                    'template'       => $template,
+                    'meme_text'      => $meme_text,
+                    'status'         => $status,
+                    'debug_context'  => $context_json,
+                    'plugin_version' => NGUU_LAI_VERSION,
+                    'created_at'     => current_time( 'mysql' ),
+                ],
+                [ '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s' ]
+            );
+        }
+
         return $result ? (int) $wpdb->insert_id : 0;
     }
 
@@ -166,6 +235,8 @@ class Database {
      */
     public static function get_logs( int $limit = 50, int $offset = 0, string $start_date = '', string $end_date = '', string $search = '' ): array {
         global $wpdb;
+
+        self::create_or_migrate_tables();
 
         $table  = self::get_table_name();
         $where  = [ '1=1' ];
@@ -203,6 +274,8 @@ class Database {
      */
     public static function count_logs( string $start_date = '', string $end_date = '', string $search = '' ): int {
         global $wpdb;
+
+        self::create_or_migrate_tables();
 
         $table  = self::get_table_name();
         $where  = [ '1=1' ];
@@ -243,6 +316,8 @@ class Database {
      */
     public static function get_analytics( string $start_date = '', string $end_date = '' ): array {
         global $wpdb;
+
+        self::create_or_migrate_tables();
 
         $table  = self::get_table_name();
         $where  = [ '1=1' ];
@@ -285,5 +360,15 @@ class Database {
             'unique_users'  => (int) ( $summary->unique_users ?? 0 ),
             'top_templates' => $top_templates ?: [],
         ];
+    }
+
+    /**
+     * Xóa toàn bộ logs.
+     */
+    public static function clear_logs(): bool {
+        global $wpdb;
+        $table = self::get_table_name();
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+        return (bool) $wpdb->query( "TRUNCATE TABLE {$table}" );
     }
 }

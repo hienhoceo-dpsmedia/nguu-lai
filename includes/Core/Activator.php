@@ -11,30 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Activator {
 
     public static function activate(): void {
-        global $wpdb;
-
-        $table_name      = $wpdb->prefix . 'nguu_lai_logs';
-        $charset_collate = $wpdb->get_charset_collate();
-
-        $sql = "CREATE TABLE IF NOT EXISTS $table_name (
-            id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-            user_id bigint(20) unsigned DEFAULT 0 NOT NULL,
-            ip_address varchar(45) DEFAULT '' NOT NULL,
-            template_name varchar(100) DEFAULT '' NOT NULL,
-            meme_text text NOT NULL,
-            session_id varchar(64) DEFAULT '' NOT NULL,
-            user_agent varchar(255) DEFAULT '' NOT NULL,
-            status varchar(20) DEFAULT 'success' NOT NULL,
-            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
-            PRIMARY KEY  (id),
-            KEY user_id (user_id),
-            KEY ip_address (ip_address),
-            KEY status (status),
-            KEY created_at (created_at)
-        ) $charset_collate;";
-
-        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-        dbDelta( $sql );
+        \NguuLai\Models\Database::create_or_migrate_tables();
 
         // Bộ Câu thoại tiếng Việt viral thịnh hành cho Ngưu Lai
         $default_phrases = [
