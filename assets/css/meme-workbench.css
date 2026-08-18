@@ -838,7 +838,17 @@
         gap: 6px;
     }
 
+    .meme-section {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .nguu-lai-auth-bar {
+        order: 1;
+    }
+
     .section-heading-row {
+        order: 2;
         flex-direction: column;
         align-items: flex-start;
         gap: 2px;
@@ -862,12 +872,16 @@
     }
 
     .meme-workbench {
-        border-radius: 10px;
+        display: contents;
     }
 
     .meme-preview-wrap {
+        order: 3;
         padding: 18px 12px 14px;
         min-height: auto;
+        background: var(--nl-blue);
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
     }
 
     .preview-label {
@@ -882,9 +896,25 @@
         box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
     }
 
+    .meme-library {
+        order: 4;
+        padding-top: 18px;
+        margin-bottom: 0;
+    }
+
     .meme-controls {
+        order: 5;
         padding: 16px 14px;
         gap: 12px;
+        background: var(--nl-ink);
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        margin-top: 18px;
+    }
+
+    .phrase-library {
+        order: 6;
+        padding-top: 20px;
     }
 
     .tool-field input[type="text"] {
