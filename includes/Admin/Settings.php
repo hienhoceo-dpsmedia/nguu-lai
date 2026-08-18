@@ -8,9 +8,43 @@ if ( ! defined( 'ABSPATH' ) ) {
 use NguuLai\Models\Database;
 
 /**
- * Quản lý Menu, Form xử lý Admin POST và Render Giao diện Cài đặt.
+ * Quản lý Menu, Trang Cài Đặt và Xử lý POST trong WP Admin.
  */
 class Settings {
+
+    public static function get_default_viral_phrases(): array {
+        return [
+            'Tau mà tổn thương thì tbây phải tổn thất',
+            'Thấy tui cười đừng nghĩ tui vui, mà thấy tui khóc đừng nghĩ tui buồn.',
+            'Cái đầu của tui tỉnh như tỉnh uỷ.',
+            'Thấy chuyện bất bình, chụp màn hình gửi quý dị xem liền.',
+            'Cái đồ không có nổi 1000 tỷ.',
+            'Chúng ta nghèo không đáng sợ, mà chỉ sợ nghèo đứng thôi.',
+            'T bước ra đường như chai dầu thơm bị bể.',
+            'Con đàn bà xa xỉ là t.',
+            'Thua thì chung đ\' run.',
+            'Trên đời này đừng có làm điều gì hết, đã làm sẽ có người biết, đã có người biết là t sẽ biết.',
+            'Không nên giao du với những loại tầm thường, vì loại tầm thường sẽ kéo mình đi làm chuyện tầm bậy.',
+            'Tại sao? Đứng đây rồi còn hỏi tại sao? Về học lại đi.',
+            'Trùm đầu, trùm cuối, trùm giữa đume t trùm mền tbây hết.',
+            'Hả?',
+            'Ủa alo? Gì vậy trời?',
+            'Nghiêm túc đi bạn ơi.',
+            'Nói lại lần nữa xem?',
+            'Cạn lời luôn á.',
+            'Biết nói gì bây giờ?',
+            'Đúng rồi, bạn là nhất!',
+            'Đỉnh chóp luôn á!',
+            'Bò cũng biết bay nha.',
+            'Không thể tin được luôn!',
+            'Chuẩn bị xem lại lần hai.',
+            'Sau cơn mưa trời lại sáng.',
+            'Tôi đến, tôi kêu "Ụm bò", rồi tôi đi.',
+            'Bình tĩnh lại nào.',
+            'Chuyện này có hợp lý không?',
+            'Trong mơ cái gì cũng có.',
+        ];
+    }
 
     public function register_admin_menu(): void {
         add_menu_page(
@@ -20,21 +54,22 @@ class Settings {
             'nguu-lai-settings',
             [ $this, 'render_settings_page' ],
             'dashicons-format-image',
-            65
+            30
         );
     }
 
     public function register_post_handlers(): void {
         add_action( 'admin_post_nguu_lai_save_settings', [ $this, 'handle_save_settings' ] );
         add_action( 'admin_post_nguu_lai_save_phrases', [ $this, 'handle_save_phrases' ] );
+        add_action( 'admin_post_nguu_lai_reset_phrases', [ $this, 'handle_reset_phrases' ] );
         add_action( 'admin_post_nguu_lai_block_ip', [ $this, 'handle_block_ip' ] );
         add_action( 'admin_post_nguu_lai_unblock_ip', [ $this, 'handle_unblock_ip' ] );
-        add_action( 'admin_post_nguu_lai_clear_blocklist', [ $this, 'handle_clear_blocklist' ] );
-        add_action( 'admin_post_nguu_lai_clear_logs', [ $this, 'handle_clear_logs' ] );
+        add_action( 'admin_post_nguu_lai_clear_all_logs', [ $this, 'handle_clear_all_logs' ] );
+        add_action( 'admin_post_nguu_lai_clear_all_blocks', [ $this, 'handle_clear_all_blocks' ] );
     }
 
     /**
-     * Lưu Cài đặt Chung & Google Auth.
+     * Lưu Cài đặt Chung, Quota & Google Auth.
      */
     public function handle_save_settings(): void {
         check_admin_referer( 'nguu_lai_save_settings_action', 'nguu_lai_nonce' );
@@ -46,7 +81,7 @@ class Settings {
         $google_client_id  = sanitize_text_field( wp_unslash( $_POST['nguu_lai_google_client_id'] ?? '' ) );
         $require_login     = isset( $_POST['nguu_lai_require_login'] ) ? '1' : '0';
         $guest_quota       = max( 0, intval( $_POST['nguu_lai_guest_quota'] ?? 5 ) );
-        $watermark_text    = sanitize_text_field( wp_unslash( $_POST['nguu_lai_watermark_text'] ?? 'niulai.wiki' ) );
+        $watermark_text    = sanitize_text_field( wp_unslash( $_POST['nguu_lai_watermark_text'] ?? 'DPS.MEDIA' ) );
         $watermark_enabled = isset( $_POST['nguu_lai_watermark_enabled'] ) ? '1' : '0';
         $trust_proxies     = isset( $_POST['nguu_lai_trust_proxies'] ) ? '1' : '0';
 
@@ -60,13 +95,13 @@ class Settings {
         wp_safe_redirect( add_query_arg( [
             'page'   => 'nguu-lai-settings',
             'tab'    => 'settings',
-            'status' => 'saved',
+            'status' => 'settings_saved',
         ], admin_url( 'admin.php' ) ) );
         exit;
     }
 
     /**
-     * Lưu Danh sách 16 Câu thoại Gợi ý.
+     * Lưu Danh sách câu thoại từ Textarea hoặc Input List.
      */
     public function handle_save_phrases(): void {
         check_admin_referer( 'nguu_lai_save_phrases_action', 'nguu_lai_nonce' );
@@ -75,18 +110,28 @@ class Settings {
             wp_die( esc_html__( 'Bạn không có quyền thực hiện hành động này.', 'nguu-lai' ) );
         }
 
-        $raw_phrases = isset( $_POST['nguu_lai_phrases'] ) ? (array) $_POST['nguu_lai_phrases'] : [];
         $clean_phrases = [];
 
-        foreach ( $raw_phrases as $phrase ) {
-            $cleaned = trim( sanitize_text_field( wp_unslash( $phrase ) ) );
-            if ( ! empty( $cleaned ) ) {
-                $clean_phrases[] = $cleaned;
+        // Xử lý từ textarea nếu có
+        if ( isset( $_POST['nguu_lai_phrases_text'] ) ) {
+            $raw_lines = explode( "\n", wp_unslash( $_POST['nguu_lai_phrases_text'] ) );
+            foreach ( $raw_lines as $line ) {
+                $cleaned = trim( sanitize_text_field( $line ) );
+                if ( ! empty( $cleaned ) ) {
+                    $clean_phrases[] = $cleaned;
+                }
+            }
+        } elseif ( isset( $_POST['nguu_lai_phrases'] ) && is_array( $_POST['nguu_lai_phrases'] ) ) {
+            foreach ( $_POST['nguu_lai_phrases'] as $phrase ) {
+                $cleaned = trim( sanitize_text_field( wp_unslash( $phrase ) ) );
+                if ( ! empty( $cleaned ) ) {
+                    $clean_phrases[] = $cleaned;
+                }
             }
         }
 
         if ( empty( $clean_phrases ) ) {
-            $clean_phrases = [ 'Hả?', 'Nghiêm túc đi bạn ơi.' ];
+            $clean_phrases = self::get_default_viral_phrases();
         }
 
         update_option( 'nguu_lai_default_phrases', $clean_phrases );
@@ -95,6 +140,26 @@ class Settings {
             'page'   => 'nguu-lai-settings',
             'tab'    => 'phrases',
             'status' => 'phrases_saved',
+        ], admin_url( 'admin.php' ) ) );
+        exit;
+    }
+
+    /**
+     * Khôi phục toàn bộ danh sách câu thoại viral mặc định.
+     */
+    public function handle_reset_phrases(): void {
+        check_admin_referer( 'nguu_lai_reset_phrases_action', 'nguu_lai_nonce' );
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( esc_html__( 'Bạn không có quyền thực hiện hành động này.', 'nguu-lai' ) );
+        }
+
+        update_option( 'nguu_lai_default_phrases', self::get_default_viral_phrases() );
+
+        wp_safe_redirect( add_query_arg( [
+            'page'   => 'nguu-lai-settings',
+            'tab'    => 'phrases',
+            'status' => 'phrases_reset',
         ], admin_url( 'admin.php' ) ) );
         exit;
     }
@@ -116,7 +181,7 @@ class Settings {
                 'ip'         => $ip,
                 'reason'     => sanitize_text_field( wp_unslash( $_POST['block_reason'] ?? 'Chặn thủ công bởi Quản trị viên' ) ),
                 'created_at' => current_time( 'mysql' ),
-                'expires_at' => 0, // Vĩnh viễn trừ khi mở khóa
+                'expires_at' => 0,
             ];
             update_option( 'nguu_lai_blocked_ips', $blocked );
         }
@@ -130,7 +195,7 @@ class Settings {
     }
 
     /**
-     * Mở chặn 1 IP.
+     * Mở khóa IP.
      */
     public function handle_unblock_ip(): void {
         check_admin_referer( 'nguu_lai_unblock_ip_action', 'nguu_lai_nonce' );
@@ -139,13 +204,14 @@ class Settings {
             wp_die( esc_html__( 'Bạn không có quyền thực hiện hành động này.', 'nguu-lai' ) );
         }
 
-        $ip      = sanitize_text_field( wp_unslash( $_GET['ip'] ?? '' ) );
-        $blocked = get_option( 'nguu_lai_blocked_ips', [] );
-        $new_list = array_values( array_filter( $blocked, function ( $item ) use ( $ip ) {
-            return ( $item['ip'] ?? '' ) !== $ip;
-        } ) );
+        $target_ip = sanitize_text_field( wp_unslash( $_GET['ip'] ?? '' ) );
+        $blocked   = get_option( 'nguu_lai_blocked_ips', [] );
 
-        update_option( 'nguu_lai_blocked_ips', $new_list );
+        $updated = array_filter( $blocked, function ( $item ) use ( $target_ip ) {
+            return ( $item['ip'] ?? '' ) !== $target_ip;
+        } );
+
+        update_option( 'nguu_lai_blocked_ips', array_values( $updated ) );
 
         wp_safe_redirect( add_query_arg( [
             'page'   => 'nguu-lai-settings',
@@ -156,39 +222,16 @@ class Settings {
     }
 
     /**
-     * Xóa toàn bộ danh sách chặn IP.
+     * Xóa toàn bộ logs.
      */
-    public function handle_clear_blocklist(): void {
-        check_admin_referer( 'nguu_lai_clear_blocklist_action', 'nguu_lai_nonce' );
+    public function handle_clear_all_logs(): void {
+        check_admin_referer( 'nguu_lai_clear_all_logs_action', 'nguu_lai_nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_die( esc_html__( 'Bạn không có quyền thực hiện hành động này.', 'nguu-lai' ) );
         }
 
-        update_option( 'nguu_lai_blocked_ips', [] );
-
-        wp_safe_redirect( add_query_arg( [
-            'page'   => 'nguu-lai-settings',
-            'tab'    => 'security',
-            'status' => 'blocklist_cleared',
-        ], admin_url( 'admin.php' ) ) );
-        exit;
-    }
-
-    /**
-     * Xóa toàn bộ nhật ký Logs.
-     */
-    public function handle_clear_logs(): void {
-        check_admin_referer( 'nguu_lai_clear_logs_action', 'nguu_lai_nonce' );
-
-        if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'Bạn không có quyền thực hiện hành động này.', 'nguu-lai' ) );
-        }
-
-        global $wpdb;
-        $table = Database::get_table_name();
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-        $wpdb->query( "TRUNCATE TABLE {$table}" );
+        Database::clear_logs();
 
         wp_safe_redirect( add_query_arg( [
             'page'   => 'nguu-lai-settings',
@@ -199,34 +242,61 @@ class Settings {
     }
 
     /**
-     * Render trang Admin Settings với các Tabs thuần Việt.
+     * Mở khóa tất cả IP.
+     */
+    public function handle_clear_all_blocks(): void {
+        check_admin_referer( 'nguu_lai_clear_all_blocks_action', 'nguu_lai_nonce' );
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( esc_html__( 'Bạn không có quyền thực hiện hành động này.', 'nguu-lai' ) );
+        }
+
+        update_option( 'nguu_lai_blocked_ips', [] );
+
+        wp_safe_redirect( add_query_arg( [
+            'page'   => 'nguu-lai-settings',
+            'tab'    => 'security',
+            'status' => 'all_blocks_cleared',
+        ], admin_url( 'admin.php' ) ) );
+        exit;
+    }
+
+    /**
+     * Render trang giao diện Admin Settings.
      */
     public function render_settings_page(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_die( esc_html__( 'Bạn không có quyền truy cập trang này.', 'nguu-lai' ) );
         }
 
-        $current_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'overview';
-        $status      = isset( $_GET['status'] ) ? sanitize_key( $_GET['status'] ) : '';
+        $current_tab = sanitize_key( $_GET['tab'] ?? 'overview' );
+        $status      = sanitize_key( $_GET['status'] ?? '' );
+        $today_str   = current_time( 'Y-m-d' );
+        $search      = sanitize_text_field( wp_unslash( $_GET['s'] ?? '' ) );
 
-        // Dữ liệu bộ lọc logs
-        $preset     = isset( $_GET['preset'] ) ? sanitize_key( $_GET['preset'] ) : '';
-        $start_date = isset( $_GET['start_date'] ) ? sanitize_text_field( wp_unslash( $_GET['start_date'] ) ) : '';
-        $end_date   = isset( $_GET['end_date'] ) ? sanitize_text_field( wp_unslash( $_GET['end_date'] ) ) : '';
-        $search     = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
-
-        $today_str = current_time( 'Y-m-d' );
-        if ( 'today' === $preset || '1' === $preset ) {
+        $preset = sanitize_key( $_GET['preset'] ?? '' );
+        if ( 'today' === $preset ) {
             $start_date = $today_str;
             $end_date   = $today_str;
         } elseif ( 'yesterday' === $preset ) {
-            $start_date = date( 'Y-m-d', strtotime( '-1 day', current_time( 'timestamp' ) ) );
-            $end_date   = $start_date;
+            $yesterday  = gmdate( 'Y-m-d', strtotime( '-1 day', current_time( 'timestamp' ) ) );
+            $start_date = $yesterday;
+            $end_date   = $yesterday;
         } elseif ( '7' === $preset ) {
-            $start_date = date( 'Y-m-d', strtotime( '-7 days', current_time( 'timestamp' ) ) );
+            $start_date = gmdate( 'Y-m-d', strtotime( '-7 days', current_time( 'timestamp' ) ) );
             $end_date   = $today_str;
         } elseif ( '30' === $preset ) {
-            $start_date = date( 'Y-m-d', strtotime( '-30 days', current_time( 'timestamp' ) ) );
+            $start_date = gmdate( 'Y-m-d', strtotime( '-30 days', current_time( 'timestamp' ) ) );
+            $end_date   = $today_str;
+        } else {
+            $start_date = sanitize_text_field( wp_unslash( $_GET['start_date'] ?? gmdate( 'Y-m-d', strtotime( '-30 days', current_time( 'timestamp' ) ) ) ) );
+            $end_date   = sanitize_text_field( wp_unslash( $_GET['end_date'] ?? $today_str ) );
+        }
+
+        if ( empty( $start_date ) ) {
+            $start_date = gmdate( 'Y-m-d', strtotime( '-30 days', current_time( 'timestamp' ) ) );
+        }
+        if ( empty( $end_date ) ) {
             $end_date   = $today_str;
         }
 
@@ -249,7 +319,11 @@ class Settings {
         $watermark_text    = get_option( 'nguu_lai_watermark_text', 'niulai.wiki' );
         $watermark_enabled = (bool) get_option( 'nguu_lai_watermark_enabled', '1' );
         $trust_proxies     = (bool) get_option( 'nguu_lai_trust_proxies', '1' );
-        $phrases           = get_option( 'nguu_lai_default_phrases', [] );
+        
+        $phrases = get_option( 'nguu_lai_default_phrases', [] );
+        if ( empty( $phrases ) || ! is_array( $phrases ) ) {
+            $phrases = self::get_default_viral_phrases();
+        }
 
         // Render view template
         include NGUU_LAI_PLUGIN_DIR . 'templates/admin/settings-page.php';

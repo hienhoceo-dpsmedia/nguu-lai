@@ -23,20 +23,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 
     <!-- Thông báo Trạng thái (Notices) -->
     <?php if ( ! empty( $status ) ) : ?>
-        <?php if ( 'saved' === $status ) : ?>
+        <?php if ( in_array( $status, [ 'saved', 'settings_saved' ], true ) ) : ?>
             <div class="notice notice-success is-dismissible"><p>✅ Đã lưu cấu hình cài đặt thành công!</p></div>
         <?php elseif ( 'phrases_saved' === $status ) : ?>
             <div class="notice notice-success is-dismissible"><p>✅ Đã cập nhật danh sách câu thoại gợi ý thành công!</p></div>
+        <?php elseif ( 'phrases_reset' === $status ) : ?>
+            <div class="notice notice-success is-dismissible"><p>🔄 Đã khôi phục toàn bộ danh sách câu thoại viral mặc định thành công!</p></div>
         <?php elseif ( 'ip_blocked' === $status ) : ?>
             <div class="notice notice-success is-dismissible"><p>🚫 Đã thêm địa chỉ IP vào danh sách chặn thành công!</p></div>
         <?php elseif ( 'ip_unblocked' === $status ) : ?>
             <div class="notice notice-success is-dismissible"><p>🔓 Đã mở chặn địa chỉ IP thành công!</p></div>
-        <?php elseif ( 'blocklist_cleared' === $status ) : ?>
+        <?php elseif ( in_array( $status, [ 'blocklist_cleared', 'all_blocks_cleared' ], true ) ) : ?>
             <div class="notice notice-success is-dismissible"><p>✨ Đã xóa sạch danh sách IP bị chặn!</p></div>
         <?php elseif ( 'logs_cleared' === $status ) : ?>
             <div class="notice notice-success is-dismissible"><p>🗑️ Đã xóa sạch toàn bộ nhật ký tạo meme!</p></div>
         <?php endif; ?>
     <?php endif; ?>
+
 
     <!-- Thanh Điều Hướng Tabs -->
     <nav class="nav-tab-wrapper nguu-lai-nav-tabs">
@@ -225,32 +228,49 @@ if ( ! defined( 'ABSPATH' ) ) {
              TAB 3: QUẢN LÝ CÂU THOẠI & MẪU PHÔI
              =================================================================== -->
         <?php elseif ( 'phrases' === $current_tab ) : ?>
-            <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
-                <input type="hidden" name="action" value="nguu_lai_save_phrases" />
-                <?php wp_nonce_field( 'nguu_lai_save_phrases_action', 'nguu_lai_nonce' ); ?>
-
-                <div class="nguu-lai-card">
-                    <div class="card-header">
-                        <h2>Danh Sách 16 Câu Thoại Gợi Ý (Phrase Library)</h2>
-                        <p>Các câu thoại này sẽ xuất hiện dưới dạng các nút bấm nhanh giúp người dùng chọn câu hay chỉ bằng 1 cú nhấp chuột.</p>
-                    </div>
-                    
-                    <div class="phrases-grid-editor">
-                        <?php for ( $i = 0; $i < 16; $i++ ) : ?>
-                            <div class="phrase-input-item">
-                                <span class="phrase-idx">#<?php echo esc_html( $i + 1 ); ?></span>
-                                <input type="text" name="nguu_lai_phrases[]" 
-                                       value="<?php echo esc_attr( $phrases[ $i ] ?? '' ); ?>" 
-                                       placeholder="Nhập câu thoại..." class="regular-text" />
-                            </div>
-                        <?php endfor; ?>
-                    </div>
-
-                    <p class="submit">
-                        <button type="submit" class="button button-primary">Lưu Danh Sách Câu Thoại 💬</button>
-                    </p>
+            <div class="nguu-lai-card">
+                <div class="card-header">
+                    <h2>Quản Lý Danh Sách Câu Thoại Gợi Ý (Phrase Library)</h2>
+                    <p>Các câu thoại này sẽ xuất hiện dưới dạng các nút bấm nhanh trên giao diện tạo meme giúp người dùng chọn chỉ bằng 1 chạm.</p>
                 </div>
-            </form>
+
+                <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+                    <input type="hidden" name="action" value="nguu_lai_save_phrases" />
+                    <?php wp_nonce_field( 'nguu_lai_save_phrases_action', 'nguu_lai_nonce' ); ?>
+
+                    <table class="form-table">
+                        <tr>
+                            <th scope="row">
+                                <label for="nguu_lai_phrases_text">Danh sách câu thoại<br><small style="font-weight: normal; color: #888;">(Mỗi dòng là 1 câu thoại)</small></label>
+                            </th>
+                            <td>
+                                <textarea id="nguu_lai_phrases_text" name="nguu_lai_phrases_text" rows="16" class="large-text code" style="font-size: 14px; line-height: 1.6; font-family: 'Be Vietnam Pro', 'Montserrat', sans-serif; padding: 12px; border-radius: 6px;"><?php echo esc_textarea( implode( "\n", (array) $phrases ) ); ?></textarea>
+                                <p class="description">
+                                    💡 <strong>Mẹo:</strong> Nhập mỗi câu thoại trên một dòng riêng biệt. Hiện tại có <strong><?php echo esc_html( (string) count( (array) $phrases ) ); ?></strong> câu thoại đang hoạt động.
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div style="display: flex; gap: 12px; align-items: center; margin-top: 14px;">
+                        <button type="submit" class="button button-primary button-hero">Lưu Danh Sách Câu Thoại 💬</button>
+                    </div>
+                </form>
+
+                <hr style="margin: 24px 0 18px; border: 0; border-top: 1px solid #eee;" />
+
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <strong>Khôi phục mặc định:</strong> Nhấn để tải lại toàn bộ danh sách các câu nói viral hot trend mới nhất.
+                    </div>
+                    <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" onsubmit="return confirm('Bạn có chắc chắn muốn khôi phục toàn bộ danh sách câu thoại viral mặc định? Các câu tự nhập thêm sẽ được thay thế bằng danh sách chuẩn.');">
+                        <input type="hidden" name="action" value="nguu_lai_reset_phrases" />
+                        <?php wp_nonce_field( 'nguu_lai_reset_phrases_action', 'nguu_lai_nonce' ); ?>
+                        <button type="submit" class="button button-secondary">🔄 Khôi Phục Danh Sách Viral Mặc Định</button>
+                    </form>
+                </div>
+            </div>
+
 
             <div class="nguu-lai-card">
                 <div class="card-header">
