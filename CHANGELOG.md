@@ -6,6 +6,22 @@ Tất cả các thay đổi đáng chú ý của dự án **Ngưu Lai** sẽ đ�
 
 ---
 
+## [1.0.1] - 2026-08-18
+
+### Đã thêm (Added)
+- **Custom CSS Tùy chỉnh (Giao diện Shortcode):**
+  - Tích hợp khung soạn thảo Custom CSS trong Admin Settings (*Mục 4: Custom CSS Tùy Chỉnh*).
+  - Tự động nạp CSS vào frontend theo 2 tầng: `wp_add_inline_style()` vào `<head>` và `<style id="nguu-lai-custom-css">` trực tiếp trong output shortcode (tương thích 100% với các plugin caching/minification).
+  - Tự động dọn dẹp tùy chọn `nguu_lai_custom_css` khi gỡ cài đặt (uninstall).
+
+### Đã sửa (Fixed)
+- **Sửa lỗi Google Login modal bị xung đột CSS class:**
+  - Đổi tên các CSS class generic `modal-backdrop`, `modal-dialog` sang `nguu-lai-backdrop`, `nguu-lai-dialog` để tránh bị theme hoặc plugin khác (Bootstrap, WooCommerce, Elementor...) ghi đè hoặc xung đột z-index.
+- **Sửa lỗi Google GSI script bị defer/optimize bởi cache plugin:**
+  - Thêm thuộc tính `data-no-optimize` và `data-cfasync="false"` vào thẻ `<script>` Google Identity Services để các plugin cache/minify (WP Rocket, LiteSpeed Cache, Cloudflare Zaraz, Autoptimize...) không defer/async/minify script GSI, tránh lỗi `google.accounts.id is not defined`.
+
+---
+
 ## [1.0.0] - 2026-08-18
 
 ### Đã thêm (Added)

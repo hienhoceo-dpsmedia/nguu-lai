@@ -3,7 +3,7 @@
  * Plugin Name:       Ngưu Lai — Trình Tạo Meme & Đăng Nhập Google
  * Plugin URI:        https://dps.media
  * Description:       Trình tạo meme tương tác chất lượng cao qua Shortcode [nguu_lai_meme], tích hợp Canvas 900x900, 16 phôi Niu Lai chuẩn, xử lý an toàn 100% trong trình duyệt và đăng nhập Google 1 chạm.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Author:            DPS Media
  * Author URI:        https://dps.media
  * License:           GPL-2.0+
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Định nghĩa các hằng số Plugin
-define( 'NGUU_LAI_VERSION', '1.0.0' );
+define( 'NGUU_LAI_VERSION', '1.0.1' );
 define( 'NGUU_LAI_PLUGIN_FILE', __FILE__ );
 define( 'NGUU_LAI_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'NGUU_LAI_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

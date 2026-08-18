@@ -84,6 +84,7 @@ class Settings {
         $watermark_text    = sanitize_text_field( wp_unslash( $_POST['nguu_lai_watermark_text'] ?? 'DPS.MEDIA' ) );
         $watermark_enabled = isset( $_POST['nguu_lai_watermark_enabled'] ) ? '1' : '0';
         $trust_proxies     = isset( $_POST['nguu_lai_trust_proxies'] ) ? '1' : '0';
+        $custom_css        = wp_strip_all_tags( wp_unslash( $_POST['nguu_lai_custom_css'] ?? '' ) );
 
         update_option( 'nguu_lai_google_client_id', $google_client_id );
         update_option( 'nguu_lai_require_login', $require_login );
@@ -91,6 +92,7 @@ class Settings {
         update_option( 'nguu_lai_watermark_text', $watermark_text );
         update_option( 'nguu_lai_watermark_enabled', $watermark_enabled );
         update_option( 'nguu_lai_trust_proxies', $trust_proxies );
+        update_option( 'nguu_lai_custom_css', $custom_css );
 
         wp_safe_redirect( add_query_arg( [
             'page'   => 'nguu-lai-settings',
@@ -319,6 +321,7 @@ class Settings {
         $watermark_text    = get_option( 'nguu_lai_watermark_text', 'niulai.wiki' );
         $watermark_enabled = (bool) get_option( 'nguu_lai_watermark_enabled', '1' );
         $trust_proxies     = (bool) get_option( 'nguu_lai_trust_proxies', '1' );
+        $custom_css        = get_option( 'nguu_lai_custom_css', '' );
         
         $phrases = get_option( 'nguu_lai_default_phrases', [] );
         if ( empty( $phrases ) || ! is_array( $phrases ) ) {

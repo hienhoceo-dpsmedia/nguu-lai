@@ -75,24 +75,7 @@ class Shortcode {
         // Lấy danh sách câu thoại từ Admin
         $default_phrases = get_option( 'nguu_lai_default_phrases', [] );
         if ( empty( $default_phrases ) || ! is_array( $default_phrases ) ) {
-            $default_phrases = [
-                'Hả?',
-                'Nghiêm túc đi bạn ơi.',
-                'Nói lại lần nữa xem?',
-                'Cạn lời luôn á.',
-                'Biết nói gì bây giờ?',
-                'Đúng rồi, bạn là nhất!',
-                'Ủa alo? Gì vậy trời?',
-                'Đỉnh chóp luôn á!',
-                'Bò cũng biết bay nha.',
-                'Không thể tin được luôn!',
-                'Chuẩn bị xem lại lần hai.',
-                'Sau cơn mưa trời lại sáng.',
-                'Tôi đến, tôi kêu "Ụm bò", rồi tôi đi.',
-                'Bình tĩnh lại nào.',
-                'Chuyện này có hợp lý không?',
-                'Trong mơ cái gì cũng có.',
-            ];
+            $default_phrases = \NguuLai\Admin\Settings::get_default_viral_phrases();
         }
         $phrases = apply_filters( 'nguu_lai_meme_phrases', $default_phrases );
 
@@ -162,8 +145,17 @@ class Shortcode {
         // Enqueue Assets
         FrontendAssets::enqueue_workbench( $js_data );
 
+        // Lấy Custom CSS từ Admin Settings
+        $custom_css = get_option( 'nguu_lai_custom_css', '' );
+
         // Render template view
         ob_start();
+        // Chèn Custom CSS trực tiếp vào HTML shortcode (phòng trường hợp cache plugin strip inline style từ <head>)
+        if ( ! empty( $custom_css ) ) :
+            ?>
+            <style id="nguu-lai-custom-css"><?php echo wp_strip_all_tags( $custom_css ); ?></style>
+            <?php
+        endif;
         $template_file = NGUU_LAI_PLUGIN_DIR . 'templates/frontend/meme-workbench.php';
         if ( file_exists( $template_file ) ) {
             include $template_file;

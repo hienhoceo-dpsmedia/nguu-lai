@@ -26,6 +26,7 @@ $options = [
     'nguu_lai_default_phrases',
     'nguu_lai_blocked_ips',
     'nguu_lai_trust_proxies',
+    'nguu_lai_custom_css',
 ];
 
 foreach ( $options as $option ) {

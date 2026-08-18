@@ -9,10 +9,8 @@
 
     window.NguuLaiAuth = {
         gsiInitialized: false,
-        modalBtnRendered: false,
 
         init: function () {
-            // Đọc dữ liệu từ window.nguuLaiData hoặc fallback từ JSON script nhúng trực tiếp
             let data = window.nguuLaiData;
             if (!data) {
                 const configScript = document.getElementById('nguu-lai-config-json');
@@ -31,7 +29,6 @@
                 return;
             }
 
-            // Nếu đã đăng nhập thì không cần khởi tạo Google Login
             if (data.is_logged_in) {
                 return;
             }
@@ -39,23 +36,55 @@
             this.setupGSI();
         },
 
-        setupGSI: function () {
+        setupGSI: function (onReadyCallback) {
             const self = this;
 
+            function isGSIAvailable() {
+                return window.google && window.google.accounts && window.google.accounts.id;
+            }
+
+            function onReady() {
+                self.initGSIInstance();
+                self.renderAuthBarButton();
+                if (typeof onReadyCallback === 'function') {
+                    onReadyCallback();
+                }
+            }
+
+            if (isGSIAvailable()) {
+                onReady();
+                return;
+            }
+
+            // Đảm bảo script GSI được tải với đầy đủ thuộc tính chống cache/defer
+            if (!document.querySelector('script[src*="accounts.google.com/gsi/client"]')) {
+                const script = document.createElement('script');
+                script.src = 'https://accounts.google.com/gsi/client';
+                script.async = true;
+                script.defer = true;
+                script.setAttribute('data-no-optimize', '1');
+                script.setAttribute('data-cfasync', 'false');
+                script.onload = function () {
+                    if (isGSIAvailable()) {
+                        onReady();
+                    }
+                };
+                document.head.appendChild(script);
+            }
+
             const checkGSILoaded = setInterval(function () {
-                if (window.google && window.google.accounts && window.google.accounts.id) {
+                if (isGSIAvailable()) {
                     clearInterval(checkGSILoaded);
-                    self.renderGoogleButtons();
+                    onReady();
                 }
             }, 100);
 
-            // Tự hủy kiểm tra sau 10s nếu GSI không tải được
             setTimeout(function () {
                 clearInterval(checkGSILoaded);
             }, 10000);
         },
 
-        renderGoogleButtons: function () {
+        initGSIInstance: function () {
             const self = this;
             const data = window.nguuLaiData || {};
             if (!data.google_client_id || !window.google || !window.google.accounts || !window.google.accounts.id) {
@@ -63,38 +92,73 @@
             }
 
             if (!this.gsiInitialized) {
-                google.accounts.id.initialize({
-                    client_id: data.google_client_id,
-                    callback: function (response) {
-                        self.handleCredentialResponse(response);
-                    },
-                    auto_select: false,
-                    cancel_on_tap_outside: true,
-                });
-                this.gsiInitialized = true;
+                try {
+                    google.accounts.id.initialize({
+                        client_id: data.google_client_id,
+                        callback: function (response) {
+                            self.handleCredentialResponse(response);
+                        },
+                        auto_select: false,
+                        cancel_on_tap_outside: true,
+                    });
+                    this.gsiInitialized = true;
+                } catch (err) {
+                    console.warn('[NguuLaiAuth] GSI initialization warning:', err);
+                }
+            }
+        },
+
+        renderAuthBarButton: function () {
+            const data = window.nguuLaiData || {};
+            if (!data.google_client_id || !window.google || !window.google.accounts || !window.google.accounts.id) {
+                return;
             }
 
-            // 1. Nút đăng nhập trên thanh auth bar
+            this.initGSIInstance();
+
             const authBarSlot = document.getElementById('google-signin-btn-container');
             if (authBarSlot) {
                 authBarSlot.innerHTML = '';
-                google.accounts.id.renderButton(authBarSlot, {
-                    theme: 'outline',
-                    size: 'medium',
-                    text: 'signin_with',
-                    shape: 'rectangular',
-                    locale: 'vi',
-                });
-                const triggerBtn = document.getElementById('btn-trigger-google-login');
-                if (triggerBtn) {
-                    triggerBtn.style.display = 'none'; // Ẩn nút fallback khi nút Google chính thức đã render
+                try {
+                    google.accounts.id.renderButton(authBarSlot, {
+                        theme: 'outline',
+                        size: 'medium',
+                        text: 'signin_with',
+                        shape: 'rectangular',
+                        locale: 'vi',
+                    });
+                    const triggerBtn = document.getElementById('btn-trigger-google-login');
+                    if (triggerBtn) {
+                        triggerBtn.style.display = 'none';
+                    }
+                } catch (e) {
+                    console.warn('[NguuLaiAuth] AuthBar renderButton failed:', e);
                 }
             }
 
-            // 2. Nút đăng nhập trong Modal khi hết lượt
+            try {
+                google.accounts.id.prompt();
+            } catch (e) {}
+        },
+
+        renderModalButton: function () {
+            const data = window.nguuLaiData || {};
             const modalSlot = document.getElementById('modal-google-btn-slot');
-            if (modalSlot) {
-                modalSlot.innerHTML = '';
+            if (!modalSlot || !data.google_client_id) {
+                return;
+            }
+
+            if (!window.google || !window.google.accounts || !window.google.accounts.id) {
+                this.setupGSI(function () {
+                    window.NguuLaiAuth.renderModalButton();
+                });
+                return;
+            }
+
+            this.initGSIInstance();
+
+            modalSlot.innerHTML = '';
+            try {
                 google.accounts.id.renderButton(modalSlot, {
                     theme: 'filled_blue',
                     size: 'large',
@@ -103,13 +167,9 @@
                     locale: 'vi',
                     width: 280,
                 });
-                this.modalBtnRendered = true;
+            } catch (e) {
+                console.warn('[NguuLaiAuth] Modal renderButton failed:', e);
             }
-
-            // 3. Hiển thị One-Tap prompt nếu thích hợp
-            try {
-                google.accounts.id.prompt();
-            } catch (e) {}
         },
 
         handleCredentialResponse: function (response) {
@@ -145,7 +205,6 @@
                             daily_limit: -1,
                         };
 
-                        // Cập nhật giao diện thanh auth bar
                         const authBar = document.getElementById('nguu-lai-auth-bar');
                         if (authBar) {
                             const leftSide = authBar.querySelector('.auth-bar-left');
@@ -165,7 +224,6 @@
                             }
                         }
 
-                        // Đóng modal nếu đang mở
                         const modal = document.getElementById('google-login-modal');
                         if (modal) {
                             modal.hidden = true;
@@ -204,25 +262,14 @@
                 if (desc) desc.textContent = customMessage;
             }
 
-            // Hiện modal
+            // 1. Mở hiển thị modal trước
             modal.hidden = false;
 
-            // Đảm bảo nút Google được render bên trong modal khi modal hiển thị
-            const modalSlot = document.getElementById('modal-google-btn-slot');
-            if (modalSlot && window.google && window.google.accounts && window.google.accounts.id) {
-                if (!this.gsiInitialized) {
-                    this.renderGoogleButtons();
-                } else if (!modalSlot.hasChildNodes()) {
-                    google.accounts.id.renderButton(modalSlot, {
-                        theme: 'filled_blue',
-                        size: 'large',
-                        text: 'continue_with',
-                        shape: 'pill',
-                        locale: 'vi',
-                        width: 280,
-                    });
-                }
-            }
+            // 2. Chờ layout hiển thị rồi mới render Google button trong modal
+            const self = this;
+            setTimeout(function () {
+                self.renderModalButton();
+            }, 60);
         },
     };
 
@@ -244,7 +291,7 @@
             });
         }
 
-        const modalBackdrop = document.querySelector('#google-login-modal .modal-backdrop');
+        const modalBackdrop = document.querySelector('#google-login-modal .nguu-lai-backdrop, #google-login-modal .modal-backdrop');
         if (modalBackdrop) {
             modalBackdrop.addEventListener('click', function () {
                 const modal = document.getElementById('google-login-modal');

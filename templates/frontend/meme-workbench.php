@@ -226,10 +226,10 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
 
     <!-- Modal Thông báo Đăng nhập Google (Tối ưu UI Mobile & Desktop) -->
     <div class="nguu-lai-modal" id="google-login-modal" hidden>
-        <div class="modal-backdrop"></div>
-        <div class="modal-dialog">
-            <div class="modal-drag-handle"></div>
-            <button type="button" class="modal-close-btn" id="modal-close-btn" aria-label="Đóng">
+        <div class="nguu-lai-backdrop"></div>
+        <div class="nguu-lai-dialog">
+            <div class="nguu-lai-drag-handle"></div>
+            <button type="button" class="nguu-lai-close-btn" id="modal-close-btn" aria-label="Đóng">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
             

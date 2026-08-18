@@ -219,6 +219,26 @@ if ( ! defined( 'ABSPATH' ) ) {
                     </table>
                 </div>
 
+                <div class="nguu-lai-card">
+                    <div class="card-header">
+                        <h2>4. Custom CSS Tùy Chỉnh (Giao Diện Shortcode)</h2>
+                    </div>
+                    <table class="form-table">
+                        <tr>
+                            <th scope="row">
+                                <label for="nguu_lai_custom_css">CSS tùy chỉnh</label>
+                            </th>
+                            <td>
+                                <textarea id="nguu_lai_custom_css" name="nguu_lai_custom_css" rows="12" class="large-text code" style="font-family: 'Consolas', 'Monaco', 'Courier New', monospace; font-size: 13px; line-height: 1.5; padding: 12px; border-radius: 6px; background: #1e1e2e; color: #cdd6f4; border: 1px solid #45475a;"><?php echo esc_textarea( $custom_css ); ?></textarea>
+                                <p class="description">
+                                    💡 CSS ở đây sẽ được tự động chèn vào trang chứa shortcode <code>[nguu_lai_meme]</code>. Dùng để tùy chỉnh giao diện mà không cần sửa file plugin.<br>
+                                    <strong>Ví dụ:</strong> <code>.nguu-lai-workbench { border-radius: 20px; }</code>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
                 <p class="submit">
                     <button type="submit" class="button button-primary button-hero">Lưu Toàn Bộ Cài Đặt 💾</button>
                 </p>

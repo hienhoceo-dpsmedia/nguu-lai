@@ -64,6 +64,16 @@ class FrontendAssets {
             $ver_work,
             true
         );
+
+        // Chống LiteSpeed Cache / Rocket Loader tối ưu làm hỏng GSI và Auth scripts
+        add_filter( 'script_loader_tag', function ( $tag, $handle ) {
+            if ( in_array( $handle, [ 'google-gsi-client', 'nguu-lai-auth', 'nguu-lai-workbench' ], true ) ) {
+                if ( false === strpos( $tag, 'data-no-optimize' ) ) {
+                    $tag = str_replace( '<script ', '<script data-no-optimize="1" data-cfasync="false" ', $tag );
+                }
+            }
+            return $tag;
+        }, 10, 2 );
     }
 
     /**
@@ -153,5 +163,11 @@ class FrontendAssets {
 
         wp_localize_script( 'nguu-lai-workbench', 'nguuLaiData', $data );
         wp_add_inline_script( 'nguu-lai-workbench', 'window.nguuLaiData = ' . wp_json_encode( $data ) . ';', 'before' );
+
+        // Chèn Custom CSS từ Admin Settings vào frontend (nếu có)
+        $custom_css = get_option( 'nguu_lai_custom_css', '' );
+        if ( ! empty( $custom_css ) ) {
+            wp_add_inline_style( 'nguu-lai-workbench', $custom_css );
+        }
     }
 }

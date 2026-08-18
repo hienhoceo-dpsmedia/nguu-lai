@@ -545,7 +545,7 @@
 .nguu-lai-modal {
     position: fixed;
     inset: 0;
-    z-index: 99999;
+    z-index: 999999;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -556,18 +556,23 @@
     display: none !important;
 }
 
-.modal-backdrop {
+.nguu-lai-backdrop,
+#google-login-modal .modal-backdrop {
     position: absolute;
     inset: 0;
+    z-index: 1 !important;
     background: rgba(15, 20, 18, 0.72);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     transition: opacity 240ms ease;
+    pointer-events: auto !important;
 }
 
-.modal-dialog {
+.nguu-lai-dialog,
+#google-login-modal .modal-dialog {
     position: relative;
-    z-index: 2;
+    z-index: 10 !important;
+    pointer-events: auto !important;
     width: 100%;
     max-width: 420px;
     padding: 32px 28px;
@@ -578,7 +583,7 @@
     animation: modal-appear 240ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.modal-drag-handle {
+.nguu-lai-drag-handle {
     display: none;
     width: 38px;
     height: 4px;
@@ -587,7 +592,7 @@
     margin: -12px auto 16px;
 }
 
-.modal-close-btn {
+.nguu-lai-close-btn {
     position: absolute;
     top: 14px;
     right: 14px;
@@ -604,7 +609,7 @@
     transition: all 180ms ease;
 }
 
-.modal-close-btn:hover {
+.nguu-lai-close-btn:hover {
     background: #e7e7e6;
     color: #191b18;
     transform: rotate(90deg);
