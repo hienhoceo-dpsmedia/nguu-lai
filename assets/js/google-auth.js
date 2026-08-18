@@ -125,7 +125,7 @@
                         size: 'medium',
                         text: 'signin_with',
                         shape: 'rectangular',
-                        locale: 'vi',
+                        locale: data.lang || 'vi',
                     });
                     const triggerBtn = document.getElementById('btn-trigger-google-login');
                     if (triggerBtn) {
@@ -164,7 +164,7 @@
                     size: 'large',
                     text: 'continue_with',
                     shape: 'pill',
-                    locale: 'vi',
+                    locale: data.lang || 'vi',
                     width: 280,
                 });
             } catch (e) {
@@ -174,15 +174,18 @@
 
         handleCredentialResponse: function (response) {
             const data = window.nguuLaiData || {};
+            const i18n = data.i18n || {};
             if (!response || !response.credential) {
                 return;
             }
 
             if (window.NguuLaiWorkbench && window.NguuLaiWorkbench.showToast) {
-                window.NguuLaiWorkbench.showToast(data.i18n && data.i18n.logging_in ? data.i18n.logging_in : 'Đang đăng nhập Google...');
+                window.NguuLaiWorkbench.showToast(i18n.logging_in || 'Đang xác thực tài khoản Google...');
             }
 
-            fetch(data.rest_url + '/google-login', {
+            const endpoint = (data.rest_url || '').replace(/\/+$/, '') + '/google-login';
+
+            fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -210,12 +213,14 @@
                             const leftSide = authBar.querySelector('.auth-bar-left');
                             const rightSide = authBar.querySelector('.auth-bar-right');
 
+                            const unlimText = i18n.auth_unlimited || 'Không giới hạn';
+
                             if (leftSide) {
                                 leftSide.innerHTML =
                                     '<div class="user-pill is-vip">' +
                                     (result.data.avatar ? '<img src="' + result.data.avatar + '" alt="Avatar" class="user-avatar" />' : '') +
-                                    '<span class="user-name">' + (result.data.name || 'Người dùng VIP') + '</span>' +
-                                    '<span class="badge-unlimited">Lượt tải: Không giới hạn ✨</span>' +
+                                    '<span class="user-name">' + (result.data.name || 'VIP') + '</span>' +
+                                    '<span class="badge-unlimited">' + unlimText + ' ✨</span>' +
                                     '</div>';
                             }
 
@@ -230,11 +235,11 @@
                         }
 
                         if (window.NguuLaiWorkbench && window.NguuLaiWorkbench.showToast) {
-                            window.NguuLaiWorkbench.showToast(data.i18n && data.i18n.login_success ? data.i18n.login_success : 'Đăng nhập thành công! Lượt tải không giới hạn ✨');
+                            window.NguuLaiWorkbench.showToast(i18n.toast_login_success || 'Đăng nhập Google thành công! 🎉');
                         }
                     } else {
                         if (window.NguuLaiWorkbench && window.NguuLaiWorkbench.showToast) {
-                            window.NguuLaiWorkbench.showToast(result.message || (data.i18n && data.i18n.login_failed ? data.i18n.login_failed : 'Đăng nhập thất bại.'));
+                            window.NguuLaiWorkbench.showToast(result.message || i18n.toast_login_failed || 'Đăng nhập thất bại.');
                         }
                     }
                 })

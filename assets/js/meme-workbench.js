@@ -131,23 +131,25 @@
 
         updateQuotaDisplay: function () {
             const data = window.nguuLaiData || {};
+            const i18n = data.i18n || {};
             const display = document.getElementById('quota-text-display');
             if (!display) return;
 
             if (data.is_logged_in) {
-                display.textContent = 'Không giới hạn ✨';
+                display.textContent = (i18n.auth_unlimited || 'Không giới hạn') + ' ✨';
                 return;
             }
 
             const isRequireLogin = data.quota && data.quota.require_login;
             if (isRequireLogin) {
-                display.textContent = 'Đăng nhập để tải meme';
+                display.textContent = i18n.auth_login_req || 'Đăng nhập để tải meme';
                 return;
             }
 
             const rem = data.quota ? data.quota.remaining_quota : 5;
             const limit = data.quota ? data.quota.daily_limit : 5;
-            display.textContent = 'Lượt tải hôm nay: ' + rem + '/' + limit;
+            const pattern = i18n.auth_daily_quota || 'Lượt tải hôm nay: {rem}/{limit}';
+            display.textContent = pattern.replace('{rem}', rem).replace('{limit}', limit);
         },
 
         wrapText: function (ctx, text, maxWidth) {
@@ -452,7 +454,7 @@
                         if (self.textInput) {
                             self.textInput.value = phraseList[randomIndex];
                             self.drawMeme();
-                            self.showToast('Đã đổi: "' + phraseList[randomIndex] + '"');
+                            self.showToast(data.i18n && data.i18n.toast_phrase_applied ? data.i18n.toast_phrase_applied : 'Đã đổi câu thoại!');
                         }
                     }
                 });
@@ -478,7 +480,7 @@
 
                 if (requireLogin || remaining <= 0) {
                     if (window.NguuLaiAuth && window.NguuLaiAuth.openLoginModal) {
-                        window.NguuLaiAuth.openLoginModal(data.i18n && data.i18n.quota_exceeded ? data.i18n.quota_exceeded : 'Hết lượt tải miễn phí');
+                        window.NguuLaiAuth.openLoginModal(data.i18n && data.i18n.toast_quota_exceeded ? data.i18n.toast_quota_exceeded : 'Hết lượt tải miễn phí');
                     }
                     return;
                 }
@@ -502,7 +504,7 @@
                     URL.revokeObjectURL(url);
                 }, 1500);
 
-                self.showToast(data.i18n && data.i18n.download_ready ? data.i18n.download_ready : 'Đã tải meme thành công! 🎉');
+                self.showToast(data.i18n && data.i18n.toast_download_ready ? data.i18n.toast_download_ready : 'Đã tải meme thành công! 🎉');
 
                 self.sendLogUpdate();
             }, 'image/png');

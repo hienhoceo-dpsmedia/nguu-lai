@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Giao diện Meme Workbench 100% Thuần Việt (Modal Đăng nhập Tối ưu Mobile & Desktop).
+ * Template Giao diện Meme Workbench Hỗ Trợ Đa Ngôn Ngữ Tự Động (vi, en, zh).
  *
  * @package NguuLai
  */
@@ -17,12 +17,13 @@ if ( $is_logged_in ) {
     $avatar_url = get_user_meta( $user_id, 'nguu_lai_google_avatar', true ) ?: get_avatar_url( $user_id, [ 'size' => 48 ] );
 }
 
+$translations     = ! empty( $translations ) ? $translations : \NguuLai\Core\I18n::get_translations( 'vi' );
 $templates        = ! empty( $templates ) ? $templates : [];
 $phrases          = ! empty( $phrases ) ? $phrases : [];
 $vietnamese_fonts = ! empty( $vietnamese_fonts ) ? $vietnamese_fonts : [];
 $initial_template = isset( $initial_template ) ? $initial_template : 0;
 $initial_font     = isset( $initial_font ) ? $initial_font : 'Montserrat';
-$default_text     = isset( $attributes['default_text'] ) ? $attributes['default_text'] : 'Hả?';
+$default_text     = isset( $attributes['default_text'] ) ? $attributes['default_text'] : ( $translations['default_text'] ?? 'Hả?' );
 $watermark_text   = isset( $watermark_text ) ? $watermark_text : 'niulai.wiki';
 $watermark_on     = isset( $watermark_enabled ) ? $watermark_enabled : true;
 $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota' => 5, 'daily_limit' => 5, 'require_login' => false ];
@@ -50,7 +51,7 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
                         <span class="user-name"><?php echo esc_html( $user->display_name ?: $user->user_login ); ?></span>
                         <span class="badge-unlimited">
                             <svg class="svg-inline-icon" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8L12 2z"/></svg>
-                            Không giới hạn
+                            <?php echo esc_html( $translations['auth_unlimited'] ?? 'Không giới hạn' ); ?>
                         </span>
                     </div>
                 <?php else : ?>
@@ -60,9 +61,12 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
                         </span>
                         <span class="guest-text" id="quota-text-display">
                             <?php if ( ! empty( $quota['require_login'] ) ) : ?>
-                                Đăng nhập để tải meme
+                                <?php echo esc_html( $translations['auth_login_req'] ?? 'Đăng nhập để tải meme' ); ?>
                             <?php else : ?>
-                                Lượt tải hôm nay: <?php echo esc_html( (string) $quota['remaining_quota'] ); ?>/<?php echo esc_html( (string) $quota['daily_limit'] ); ?>
+                                <?php 
+                                $quota_fmt = $translations['auth_daily_quota'] ?? 'Lượt tải hôm nay: {rem}/{limit}';
+                                echo esc_html( str_replace( [ '{rem}', '{limit}' ], [ (string) $quota['remaining_quota'], (string) $quota['daily_limit'] ], $quota_fmt ) ); 
+                                ?>
                             <?php endif; ?>
                         </span>
                     </div>
@@ -79,7 +83,7 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
                             <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.8s.2-2.1.4-2.8L1.9 6.3C.7 8.7 0 10.8 0 12s.7 3.3 1.9 5.7l3.7-2.9z"/>
                             <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16c1.8 3.7 5.6 7 10.1 7z"/>
                         </svg>
-                        <span>Đăng nhập Google</span>
+                        <span><?php echo esc_html( $translations['btn_google_signin'] ?? 'Đăng nhập Google' ); ?></span>
                     </button>
                 <?php endif; ?>
             </div>
@@ -88,29 +92,29 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
         <!-- Tiêu đề Khối Meme -->
         <div class="section-heading section-heading-row">
             <div>
-                <p class="section-index">D / 03</p>
-                <h2><?php echo esc_html( $attributes['title'] ?? 'Để Ngưu Lai Nói Thay Lời Bạn' ); ?></h2>
+                <p class="section-index"><?php echo esc_html( $translations['section_index'] ?? 'D / 03' ); ?></p>
+                <h2><?php echo esc_html( $attributes['title'] ?? ( $translations['section_title'] ?? 'Để Ngưu Lai Nói Thay Lời Bạn' ) ); ?></h2>
             </div>
-            <p class="section-aside"><?php echo esc_html( $attributes['aside'] ?? 'Tạo meme PNG 900×900 cực nét.' ); ?></p>
+            <p class="section-aside"><?php echo esc_html( $attributes['aside'] ?? ( $translations['section_aside'] ?? 'Tạo meme PNG 900×900 cực nét.' ) ); ?></p>
         </div>
 
         <!-- Bàn Làm Việc Meme (Workbench) -->
         <div class="meme-workbench">
             <div class="meme-preview-wrap">
-                <p class="preview-label">Xem trước trực tiếp</p>
-                <canvas id="meme-canvas" width="900" height="900" aria-label="Trình xem trước meme Ngưu Lai thời gian thực"></canvas>
+                <p class="preview-label"><?php echo esc_html( $translations['preview_label'] ?? 'Xem trước trực tiếp' ); ?></p>
+                <canvas id="meme-canvas" width="900" height="900" aria-label="<?php echo esc_attr( $translations['canvas_label'] ?? 'Trình xem trước meme Ngưu Lai' ); ?>"></canvas>
             </div>
             
             <div class="meme-controls">
                 <!-- Nhập Nội dung chữ -->
                 <label class="tool-field">
-                    <span>Nội dung chữ của bạn</span>
-                    <input id="meme-text" type="text" maxlength="42" value="<?php echo esc_attr( $default_text ); ?>" placeholder="Nhập câu thoại meme..." autocomplete="off" />
+                    <span><?php echo esc_html( $translations['label_meme_text'] ?? 'Nội dung chữ của bạn' ); ?></span>
+                    <input id="meme-text" type="text" maxlength="42" value="<?php echo esc_attr( $default_text ); ?>" placeholder="<?php echo esc_attr( $translations['placeholder_meme_text'] ?? 'Nhập câu thoại meme...' ); ?>" autocomplete="off" />
                 </label>
                 
-                <!-- Bộ Chọn Phông Chữ (100% Chuẩn Tiếng Việt) -->
+                <!-- Bộ Chọn Phông Chữ -->
                 <label class="tool-field select-field">
-                    <span>Phông chữ (Hỗ trợ 100% Tiếng Việt)</span>
+                    <span><?php echo esc_html( $translations['label_font'] ?? 'Phông chữ' ); ?></span>
                     <div class="select-wrapper">
                         <select id="meme-font">
                             <?php foreach ( $vietnamese_fonts as $f ) : ?>
@@ -125,7 +129,7 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
                 <!-- Kích thước chữ -->
                 <label class="tool-field range-field">
                     <span>
-                        <span>Cỡ chữ</span>
+                        <span><?php echo esc_html( $translations['label_size'] ?? 'Cỡ chữ' ); ?></span>
                         <output id="meme-size-output">64px</output>
                     </span>
                     <input id="meme-size" type="range" min="28" max="120" value="64" />
@@ -134,7 +138,7 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
                 <!-- Vị trí X -->
                 <label class="tool-field range-field">
                     <span>
-                        <span>Vị trí ngang (X)</span>
+                        <span><?php echo esc_html( $translations['label_pos_x'] ?? 'Vị trí ngang (X)' ); ?></span>
                         <output id="meme-x-output">50%</output>
                     </span>
                     <input id="meme-x" type="range" min="8" max="92" value="50" />
@@ -143,7 +147,7 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
                 <!-- Vị trí Y -->
                 <label class="tool-field range-field">
                     <span>
-                        <span>Vị trí dọc (Y)</span>
+                        <span><?php echo esc_html( $translations['label_pos_y'] ?? 'Vị trí dọc (Y)' ); ?></span>
                         <output id="meme-y-output">82%</output>
                     </span>
                     <input id="meme-y" type="range" min="8" max="92" value="82" />
@@ -153,13 +157,13 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
                 <div class="meme-option-row">
                     <label class="checkbox-label">
                         <input id="meme-watermark" type="checkbox" <?php checked( $watermark_on ); ?> />
-                        <span id="meme-watermark-label">Watermark <?php echo esc_html( $watermark_text ); ?></span>
+                        <span id="meme-watermark-label"><?php echo esc_html( $translations['label_watermark'] ?? 'Watermark' ); ?> <?php echo esc_html( $watermark_text ); ?></span>
                     </label>
                     <label class="upload-button">
                         <input id="meme-upload" type="file" accept="image/*" />
                         <span class="upload-btn-content">
                             <svg class="svg-inline-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                            Tải ảnh lên
+                            <?php echo esc_html( $translations['btn_upload'] ?? 'Tải ảnh lên' ); ?>
                         </span>
                     </label>
                 </div>
@@ -168,17 +172,17 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
                 <div class="meme-actions">
                     <button class="button button-quiet" id="meme-random" type="button">
                         <svg class="svg-inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3" ry="3"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.5" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.5" fill="currentColor"/></svg>
-                        <span>Đổi câu ngẫu nhiên</span>
+                        <span><?php echo esc_html( $translations['btn_random_phrase'] ?? 'Đổi câu ngẫu nhiên' ); ?></span>
                     </button>
                     <button class="button button-dark" id="meme-download" type="button">
-                        <span>Tải meme về máy</span>
+                        <span><?php echo esc_html( $translations['btn_download'] ?? 'Tải meme về máy' ); ?></span>
                         <span aria-hidden="true">↓</span>
                     </button>
                 </div>
                 
                 <p class="meme-local-note">
                     <svg class="svg-inline-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                    Xử lý 100% trên máy của bạn, không lưu máy chủ.
+                    <?php echo esc_html( $translations['note_local_process'] ?? 'Xử lý 100% trên máy của bạn, không lưu máy chủ.' ); ?>
                 </p>
             </div>
         </div>
@@ -186,8 +190,8 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
         <!-- Thư viện 16 Mẫu Ngưu Lai Chuẩn (Hiển thị ngay trên UI) -->
         <div class="meme-library">
             <div class="meme-library-head">
-                <h3>Biểu cảm Ngưu Lai</h3>
-                <p>16 mẫu chuẩn nét, đổi ảnh giữ nguyên chữ.</p>
+                <h3><?php echo esc_html( $translations['templates_title'] ?? 'Biểu cảm Ngưu Lai' ); ?></h3>
+                <p><?php echo esc_html( $translations['templates_desc'] ?? '16 mẫu chuẩn nét, đổi ảnh giữ nguyên chữ.' ); ?></p>
             </div>
             <div class="meme-template-grid" id="meme-template-grid">
                 <?php foreach ( $templates as $index => $tpl_url ) : 
@@ -198,10 +202,10 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
                             class="<?php echo $is_active ? 'is-active' : ''; ?>" 
                             data-index="<?php echo esc_attr( $index ); ?>" 
                             data-src="<?php echo esc_url( $tpl_url ); ?>" 
-                            aria-label="Chọn phôi Ngưu Lai số <?php echo esc_attr( $tpl_num ); ?>" 
+                            aria-label="Ngưu Lai Mẫu <?php echo esc_attr( $tpl_num ); ?>" 
                             aria-pressed="<?php echo $is_active ? 'true' : 'false'; ?>">
                         <img src="<?php echo esc_url( $tpl_url ); ?>" alt="Ngưu Lai Mẫu <?php echo esc_attr( $tpl_num ); ?>" loading="lazy" />
-                        <span class="tpl-badge-text"><?php echo $is_active ? 'Đang chọn' : 'Dùng mẫu này'; ?></span>
+                        <span class="tpl-badge-text"><?php echo $is_active ? esc_html( $translations['tpl_badge_active'] ?? 'Đang chọn' ) : esc_html( $translations['tpl_badge_use'] ?? 'Dùng mẫu này' ); ?></span>
                         <span class="tpl-badge-tick" aria-hidden="true">
                             <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                         </span>
@@ -213,8 +217,8 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
         <!-- Thư viện Gợi ý Câu thoại (Hiển thị ngay trên UI) -->
         <div class="phrase-library">
             <div class="meme-library-head">
-                <h3>Câu thoại gợi ý</h3>
-                <p>Chạm để áp dụng câu thoại nhanh.</p>
+                <h3><?php echo esc_html( $translations['phrases_title'] ?? 'Câu thoại gợi ý' ); ?></h3>
+                <p><?php echo esc_html( $translations['phrases_desc'] ?? 'Chạm để áp dụng câu thoại nhanh.' ); ?></p>
             </div>
             <div class="phrase-grid" id="phrase-grid">
                 <?php foreach ( $phrases as $phrase_item ) : ?>
@@ -241,12 +245,12 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
                     <img src="<?php echo esc_url( NGUU_LAI_PLUGIN_URL . 'assets/memes/niulai_01.webp' ); ?>" alt="Ngưu Lai" class="modal-avatar-img" />
                     <span class="modal-avatar-badge">✨</span>
                 </div>
-                <h3 class="modal-title">Đăng nhập với Google</h3>
+                <h3 class="modal-title"><?php echo esc_html( $translations['modal_login_title'] ?? 'Đăng nhập với Google' ); ?></h3>
                 <p class="modal-desc" id="modal-desc-text">
                     <?php if ( ! empty( $quota['require_login'] ) ) : ?>
-                        Trang yêu cầu đăng nhập tài khoản Google để tạo và tải meme không giới hạn!
+                        <?php echo esc_html( $translations['modal_login_desc_req'] ?? 'Trang yêu cầu đăng nhập tài khoản Google để tạo và tải meme không giới hạn!' ); ?>
                     <?php else : ?>
-                        Bạn đã dùng hết số lượt tải miễn phí hôm nay. Đăng nhập để tiếp tục tải meme không giới hạn!
+                        <?php echo esc_html( $translations['modal_login_desc_quota'] ?? 'Bạn đã dùng hết số lượt tải miễn phí hôm nay. Đăng nhập để tiếp tục tải meme không giới hạn!' ); ?>
                     <?php endif; ?>
                 </p>
             </div>
@@ -255,11 +259,11 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
             <div class="modal-perks-list">
                 <div class="perk-item">
                     <span class="perk-icon">⚡</span>
-                    <span>Tải ảnh PNG 900 × 900 sắc nét</span>
+                    <span><?php echo esc_html( $translations['modal_perk_hd'] ?? 'Tải ảnh PNG 900 × 900 sắc nét' ); ?></span>
                 </div>
                 <div class="perk-item">
                     <span class="perk-icon">♾️</span>
-                    <span>Không giới hạn số lượt tải mỗi ngày</span>
+                    <span><?php echo esc_html( $translations['modal_perk_unlimited'] ?? 'Không giới hạn số lượt tải mỗi ngày' ); ?></span>
                 </div>
             </div>
 
@@ -268,11 +272,11 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
             
             <div class="modal-security-note">
                 <svg class="svg-inline-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                <span>Xác thực 1 chạm an toàn bởi Google Identity Services</span>
+                <span><?php echo esc_html( $translations['modal_security_note'] ?? 'Xác thực 1 chạm an toàn bởi Google Identity Services' ); ?></span>
             </div>
         </div>
     </div>
 
-    <!-- Toast Thông Báo Thuần Việt -->
+    <!-- Toast Thông Báo -->
     <div class="nguu-lai-toast" id="nguu-lai-toast" role="status" aria-live="polite"></div>
 </div>

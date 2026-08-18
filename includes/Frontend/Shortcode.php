@@ -6,9 +6,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use NguuLai\Models\Database;
+use NguuLai\Core\I18n;
 
 /**
- * Xử lý Shortcode [nguu_lai_meme].
+ * Xử lý Shortcode [nguu_lai_meme] hỗ trợ đa ngôn ngữ tự động (vi, en, zh).
  */
 class Shortcode {
 
@@ -19,23 +20,27 @@ class Shortcode {
     public function render_shortcode( $atts = [] ): string {
         $raw_atts = is_array( $atts ) ? $atts : [];
 
+        // 1. Nhận diện ngôn ngữ hiện tại
+        $lang         = I18n::get_current_language();
+        $translations = I18n::get_translations( $lang );
+
         $attributes = shortcode_atts( [
-            'default_text'     => 'Hả?',
+            'default_text'     => $translations['default_text'] ?? 'Hả?',
             'default_template' => 1,
             'default_font'     => 'Montserrat',
             'watermark'        => null,
             'watermark_text'   => null,
             'require_login'    => null,
             'theme'            => 'dark',
-            'title'            => 'Để Ngưu Lai Nói Thay Lời Bạn.',
-            'aside'            => 'Chọn một biểu cảm, thêm một dòng chữ, căn chỉnh trực tiếp và xuất ảnh PNG chuẩn 900 × 900.',
+            'title'            => $translations['section_title'] ?? 'Để Ngưu Lai Nói Thay Lời Bạn',
+            'aside'            => $translations['section_aside'] ?? 'Tạo meme PNG 900×900 cực nét.',
         ], $raw_atts, 'nguu_lai_meme' );
 
         $user_id      = get_current_user_id();
         $user         = wp_get_current_user();
         $quota_status = Database::get_quota_status( $user_id );
 
-        // 1. Xử lý Bắt buộc đăng nhập
+        // 2. Xử lý Bắt buộc đăng nhập
         $opt_require_login = (bool) get_option( 'nguu_lai_require_login', false );
         if ( null !== $attributes['require_login'] ) {
             $require_login = '1' === (string) $attributes['require_login'];
@@ -48,7 +53,7 @@ class Shortcode {
             $quota_status['remaining_quota'] = 0;
         }
 
-        // 2. Xử lý Watermark Text
+        // 3. Xử lý Watermark Text
         $opt_watermark_text = get_option( 'nguu_lai_watermark_text', 'niulai.wiki' );
         if ( null !== $attributes['watermark_text'] && '' !== trim( $attributes['watermark_text'] ) ) {
             $watermark_text = sanitize_text_field( $attributes['watermark_text'] );
@@ -56,7 +61,7 @@ class Shortcode {
             $watermark_text = ! empty( $opt_watermark_text ) ? $opt_watermark_text : 'niulai.wiki';
         }
 
-        // 3. Xử lý Trạng thái Watermark bật/tắt
+        // 4. Xử lý Trạng thái Watermark bật/tắt
         $opt_watermark_enabled = (bool) get_option( 'nguu_lai_watermark_enabled', '1' );
         if ( null !== $attributes['watermark'] ) {
             $watermark_enabled = '1' === (string) $attributes['watermark'];
@@ -72,14 +77,11 @@ class Shortcode {
             }
         }
 
-        // Lấy danh sách câu thoại từ Admin
-        $default_phrases = get_option( 'nguu_lai_default_phrases', [] );
-        if ( empty( $default_phrases ) || ! is_array( $default_phrases ) ) {
-            $default_phrases = \NguuLai\Admin\Settings::get_default_viral_phrases();
-        }
-        $phrases = apply_filters( 'nguu_lai_meme_phrases', $default_phrases );
+        // 5. Lấy danh sách câu thoại theo ngôn ngữ
+        $phrases = I18n::get_phrases_for_lang( $lang );
+        $phrases = apply_filters( 'nguu_lai_meme_phrases', $phrases, $lang );
 
-        // 16 phôi ảnh WebP mặc định
+        // 6. 16 phôi ảnh WebP mặc định
         $templates = [];
         for ( $i = 1; $i <= 16; $i++ ) {
             $num         = str_pad( (string) $i, 2, '0', STR_PAD_LEFT );
@@ -87,18 +89,18 @@ class Shortcode {
         }
         $templates = apply_filters( 'nguu_lai_meme_templates', $templates );
 
-        // Danh sách 10 Fonts Google chuẩn Tiếng Việt 100%
+        // 7. Danh sách Fonts Google
         $vietnamese_fonts = [
-            [ 'name' => 'Montserrat', 'label' => 'Montserrat (Mặc định)', 'weight' => '900', 'family' => 'Montserrat, sans-serif' ],
-            [ 'name' => 'Be Vietnam Pro', 'label' => 'Be Vietnam Pro (Chuẩn quốc tế)', 'weight' => '900', 'family' => '"Be Vietnam Pro", sans-serif' ],
-            [ 'name' => 'Anton', 'label' => 'Anton (In hoa đậm)', 'weight' => '400', 'family' => 'Anton, sans-serif' ],
-            [ 'name' => 'Oswald', 'label' => 'Oswald (Poster mạnh mẽ)', 'weight' => '700', 'family' => 'Oswald, sans-serif' ],
-            [ 'name' => 'Bungee', 'label' => 'Bungee (Khối Pop-art)', 'weight' => '400', 'family' => 'Bungee, cursive' ],
-            [ 'name' => 'Comfortaa', 'label' => 'Comfortaa (Bo tròn cute)', 'weight' => '700', 'family' => 'Comfortaa, cursive' ],
-            [ 'name' => 'Caveat', 'label' => 'Caveat (Viết tay tự nhiên)', 'weight' => '700', 'family' => 'Caveat, cursive' ],
-            [ 'name' => 'Patrick Hand', 'label' => 'Patrick Hand (Truyện tranh)', 'weight' => '400', 'family' => '"Patrick Hand", cursive' ],
-            [ 'name' => 'Playfair Display', 'label' => 'Playfair Display (Sang trọng)', 'weight' => '900', 'family' => '"Playfair Display", serif' ],
-            [ 'name' => 'Roboto', 'label' => 'Roboto (Tiêu chuẩn)', 'weight' => '900', 'family' => 'Roboto, sans-serif' ],
+            [ 'name' => 'Montserrat', 'label' => 'Montserrat', 'weight' => '900', 'family' => 'Montserrat, sans-serif' ],
+            [ 'name' => 'Be Vietnam Pro', 'label' => 'Be Vietnam Pro', 'weight' => '900', 'family' => '"Be Vietnam Pro", sans-serif' ],
+            [ 'name' => 'Anton', 'label' => 'Anton (Bold)', 'weight' => '400', 'family' => 'Anton, sans-serif' ],
+            [ 'name' => 'Oswald', 'label' => 'Oswald (Poster)', 'weight' => '700', 'family' => 'Oswald, sans-serif' ],
+            [ 'name' => 'Bungee', 'label' => 'Bungee (Pop-art)', 'weight' => '400', 'family' => 'Bungee, cursive' ],
+            [ 'name' => 'Comfortaa', 'label' => 'Comfortaa (Rounded)', 'weight' => '700', 'family' => 'Comfortaa, cursive' ],
+            [ 'name' => 'Caveat', 'label' => 'Caveat (Handwriting)', 'weight' => '700', 'family' => 'Caveat, cursive' ],
+            [ 'name' => 'Patrick Hand', 'label' => 'Patrick Hand (Comic)', 'weight' => '400', 'family' => '"Patrick Hand", cursive' ],
+            [ 'name' => 'Playfair Display', 'label' => 'Playfair Display (Serif)', 'weight' => '900', 'family' => '"Playfair Display", serif' ],
+            [ 'name' => 'Roboto', 'label' => 'Roboto (Standard)', 'weight' => '900', 'family' => 'Roboto, sans-serif' ],
         ];
         $vietnamese_fonts = apply_filters( 'nguu_lai_vietnamese_fonts', $vietnamese_fonts );
 
@@ -107,6 +109,7 @@ class Shortcode {
         $initial_font     = sanitize_text_field( $attributes['default_font'] ?: 'Montserrat' );
 
         $js_data = [
+            'lang'              => $lang,
             'rest_url'          => esc_url_raw( rest_url( 'nguu-lai/v1' ) ),
             'rest_nonce'        => wp_create_nonce( 'wp_rest' ),
             'google_client_id'  => esc_attr( $google_client_id ),
@@ -125,21 +128,7 @@ class Shortcode {
             'watermark_enabled' => $watermark_enabled,
             'initial_text'      => sanitize_text_field( $attributes['default_text'] ),
             'initial_template'  => $initial_template,
-            'i18n'              => [
-                'canvas_label'    => 'Trình xem trước meme Ngưu Lai thời gian thực',
-                'current'         => 'Đang chọn',
-                'use'             => 'Dùng mẫu này',
-                'download_ready'  => 'Đã tạo và tải meme thành công! 🎉',
-                'quota_exceeded'  => $require_login ? 'Trang yêu cầu đăng nhập Google để tải meme.' : 'Bạn đã dùng hết số lượt tải miễn phí hôm nay. Vui lòng đăng nhập Google để tiếp tục tải không giới hạn!',
-                'upload_error'    => 'Không thể tải ảnh. Vui lòng chọn định dạng ảnh hợp lệ (PNG, JPG, WebP).',
-                'image_loaded'    => 'Đã chọn ảnh của bạn thành công!',
-                'phrase_selected' => 'Đã áp dụng câu thoại mới!',
-                'text_empty'      => 'Vui lòng nhập nội dung chữ cho meme!',
-                'login_prompt'    => 'Đăng nhập với Google để tải meme không giới hạn!',
-                'logging_in'      => 'Đang xác thực tài khoản Google...',
-                'login_success'   => 'Đăng nhập Google thành công! Lượt tải của bạn: Không giới hạn ✨',
-                'login_failed'    => 'Đăng nhập Google thất bại. Vui lòng thử lại.',
-            ],
+            'i18n'              => $translations,
         ];
 
         // Enqueue Assets
@@ -150,7 +139,7 @@ class Shortcode {
 
         // Render template view
         ob_start();
-        // Chèn Custom CSS trực tiếp vào HTML shortcode (phòng trường hợp cache plugin strip inline style từ <head>)
+        // Chèn Custom CSS trực tiếp vào HTML shortcode
         if ( ! empty( $custom_css ) ) :
             ?>
             <style id="nguu-lai-custom-css"><?php echo wp_strip_all_tags( $custom_css ); ?></style>
