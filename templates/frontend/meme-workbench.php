@@ -50,7 +50,7 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
                         <span class="user-name"><?php echo esc_html( $user->display_name ?: $user->user_login ); ?></span>
                         <span class="badge-unlimited">
                             <svg class="svg-inline-icon" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8L12 2z"/></svg>
-                            Lượt tải: Không giới hạn
+                            Không giới hạn
                         </span>
                     </div>
                 <?php else : ?>
@@ -60,9 +60,9 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
                         </span>
                         <span class="guest-text" id="quota-text-display">
                             <?php if ( ! empty( $quota['require_login'] ) ) : ?>
-                                Bắt buộc đăng nhập Google để tải meme
+                                Đăng nhập để tải meme
                             <?php else : ?>
-                                Lượt tải miễn phí hôm nay: <?php echo esc_html( (string) $quota['remaining_quota'] ); ?>/<?php echo esc_html( (string) $quota['daily_limit'] ); ?> lượt
+                                Lượt tải hôm nay: <?php echo esc_html( (string) $quota['remaining_quota'] ); ?>/<?php echo esc_html( (string) $quota['daily_limit'] ); ?>
                             <?php endif; ?>
                         </span>
                     </div>
@@ -73,7 +73,7 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
                 <?php if ( ! $is_logged_in ) : ?>
                     <div id="google-signin-btn-container"></div>
                     <button type="button" class="btn-google-trigger" id="btn-trigger-google-login">
-                        <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+                        <svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
                             <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/>
                             <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/>
                             <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.8s.2-2.1.4-2.8L1.9 6.3C.7 8.7 0 10.8 0 12s.7 3.3 1.9 5.7l3.7-2.9z"/>
@@ -89,9 +89,9 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
         <div class="section-heading section-heading-row">
             <div>
                 <p class="section-index">D / 03</p>
-                <h2><?php echo esc_html( $attributes['title'] ?? 'Để Ngưu Lai Nói Thay Lời Bạn.' ); ?></h2>
+                <h2><?php echo esc_html( $attributes['title'] ?? 'Để Ngưu Lai Nói Thay Lời Bạn' ); ?></h2>
             </div>
-            <p class="section-aside"><?php echo esc_html( $attributes['aside'] ?? 'Chọn một biểu cảm, thêm một dòng chữ, căn chỉnh trực tiếp và xuất ảnh PNG chuẩn 900 × 900.' ); ?></p>
+            <p class="section-aside"><?php echo esc_html( $attributes['aside'] ?? 'Tạo meme PNG 900×900 cực nét.' ); ?></p>
         </div>
 
         <!-- Bàn Làm Việc Meme (Workbench) -->
@@ -153,13 +153,13 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
                 <div class="meme-option-row">
                     <label class="checkbox-label">
                         <input id="meme-watermark" type="checkbox" <?php checked( $watermark_on ); ?> />
-                        <span id="meme-watermark-label">Giữ watermark <?php echo esc_html( $watermark_text ); ?></span>
+                        <span id="meme-watermark-label">Watermark <?php echo esc_html( $watermark_text ); ?></span>
                     </label>
                     <label class="upload-button">
                         <input id="meme-upload" type="file" accept="image/*" />
                         <span class="upload-btn-content">
-                            <svg class="svg-inline-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                            Tải ảnh của bạn lên
+                            <svg class="svg-inline-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            Tải ảnh lên
                         </span>
                     </label>
                 </div>
@@ -177,8 +177,8 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
                 </div>
                 
                 <p class="meme-local-note">
-                    <svg class="svg-inline-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                    Ảnh được xử lý 100% an toàn trực tiếp trên trình duyệt của bạn và không tải lên máy chủ.
+                    <svg class="svg-inline-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    Xử lý 100% trên máy của bạn, không lưu máy chủ.
                 </p>
             </div>
         </div>
@@ -186,8 +186,8 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
         <!-- Thư viện 16 Mẫu Ngưu Lai Chuẩn (Hiển thị ngay trên UI) -->
         <div class="meme-library">
             <div class="meme-library-head">
-                <h3>Chọn một biểu cảm Ngưu Lai</h3>
-                <p>16 mẫu biểu cảm chuẩn nét. Đổi ảnh vẫn giữ nguyên câu chữ đang viết.</p>
+                <h3>Biểu cảm Ngưu Lai</h3>
+                <p>16 mẫu chuẩn nét, đổi ảnh giữ nguyên chữ.</p>
             </div>
             <div class="meme-template-grid" id="meme-template-grid">
                 <?php foreach ( $templates as $index => $tpl_url ) : 
@@ -213,8 +213,8 @@ $quota            = isset( $quota_status ) ? $quota_status : [ 'remaining_quota'
         <!-- Thư viện Gợi ý Câu thoại (Hiển thị ngay trên UI) -->
         <div class="phrase-library">
             <div class="meme-library-head">
-                <h3>Gợi ý câu thoại hay</h3>
-                <p>Bấm chọn câu bất kỳ để tự động điền ngay vào khung sửa.</p>
+                <h3>Câu thoại gợi ý</h3>
+                <p>Chạm để áp dụng câu thoại nhanh.</p>
             </div>
             <div class="phrase-grid" id="phrase-grid">
                 <?php foreach ( $phrases as $phrase_item ) : ?>

@@ -135,24 +135,19 @@
             if (!display) return;
 
             if (data.is_logged_in) {
-                display.textContent = 'Lượt tải: Không giới hạn ✨';
+                display.textContent = 'Không giới hạn ✨';
                 return;
             }
 
             const isRequireLogin = data.quota && data.quota.require_login;
             if (isRequireLogin) {
-                display.textContent = 'Bắt buộc đăng nhập Google để tải meme';
+                display.textContent = 'Đăng nhập để tải meme';
                 return;
             }
 
-            const remaining = data.quota && data.quota.remaining_quota !== undefined ? data.quota.remaining_quota : 5;
-            const limit = data.quota && data.quota.daily_limit !== undefined ? data.quota.daily_limit : 5;
-
-            if (remaining > 0) {
-                display.textContent = 'Lượt tải miễn phí hôm nay: ' + remaining + '/' + limit + ' lượt';
-            } else {
-                display.textContent = 'Đã hết lượt tải miễn phí (0/' + limit + '). Đăng nhập Google để tải thoải mái!';
-            }
+            const rem = data.quota ? data.quota.remaining_quota : 5;
+            const limit = data.quota ? data.quota.daily_limit : 5;
+            display.textContent = 'Lượt tải hôm nay: ' + rem + '/' + limit;
         },
 
         wrapText: function (ctx, text, maxWidth) {
