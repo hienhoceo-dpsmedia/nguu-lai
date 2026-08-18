@@ -89,16 +89,16 @@ class Shortcode {
 
         // Danh sách 10 Fonts Google chuẩn Tiếng Việt 100%
         $vietnamese_fonts = [
-            [ 'name' => 'Montserrat', 'label' => 'Montserrat (Mặc định - Hiện đại & Đậm nét)', 'weight' => '900', 'family' => 'Montserrat, sans-serif' ],
-            [ 'name' => 'Be Vietnam Pro', 'label' => 'Be Vietnam Pro (Chuẩn tiếng Việt quốc tế)', 'weight' => '900', 'family' => '"Be Vietnam Pro", sans-serif' ],
-            [ 'name' => 'Anton', 'label' => 'Anton (Meme kinh điển - Cao & Đậm)', 'weight' => '400', 'family' => 'Anton, sans-serif' ],
-            [ 'name' => 'Oswald', 'label' => 'Oswald (Mạnh mẽ - Phong cách Poster)', 'weight' => '700', 'family' => 'Oswald, sans-serif' ],
-            [ 'name' => 'Bungee', 'label' => 'Bungee (Khối hộp Pop-art phá cách)', 'weight' => '400', 'family' => 'Bungee, cursive' ],
-            [ 'name' => 'Comfortaa', 'label' => 'Comfortaa (Bo tròn - Dễ thương, hài hước)', 'weight' => '700', 'family' => 'Comfortaa, cursive' ],
-            [ 'name' => 'Caveat', 'label' => 'Caveat (Chữ viết tay tự nhiên, phóng khoáng)', 'weight' => '700', 'family' => 'Caveat, cursive' ],
-            [ 'name' => 'Patrick Hand', 'label' => 'Patrick Hand (Viết tay truyện tranh thân thiện)', 'weight' => '400', 'family' => '"Patrick Hand", cursive' ],
-            [ 'name' => 'Playfair Display', 'label' => 'Playfair Display (Báo chí - Kịch tính & Sang trọng)', 'weight' => '900', 'family' => '"Playfair Display", serif' ],
-            [ 'name' => 'Roboto', 'label' => 'Roboto (Rõ ràng, đơn giản, dễ đọc)', 'weight' => '900', 'family' => 'Roboto, sans-serif' ],
+            [ 'name' => 'Montserrat', 'label' => 'Montserrat (Mặc định)', 'weight' => '900', 'family' => 'Montserrat, sans-serif' ],
+            [ 'name' => 'Be Vietnam Pro', 'label' => 'Be Vietnam Pro (Chuẩn quốc tế)', 'weight' => '900', 'family' => '"Be Vietnam Pro", sans-serif' ],
+            [ 'name' => 'Anton', 'label' => 'Anton (In hoa đậm)', 'weight' => '400', 'family' => 'Anton, sans-serif' ],
+            [ 'name' => 'Oswald', 'label' => 'Oswald (Poster mạnh mẽ)', 'weight' => '700', 'family' => 'Oswald, sans-serif' ],
+            [ 'name' => 'Bungee', 'label' => 'Bungee (Khối Pop-art)', 'weight' => '400', 'family' => 'Bungee, cursive' ],
+            [ 'name' => 'Comfortaa', 'label' => 'Comfortaa (Bo tròn cute)', 'weight' => '700', 'family' => 'Comfortaa, cursive' ],
+            [ 'name' => 'Caveat', 'label' => 'Caveat (Viết tay tự nhiên)', 'weight' => '700', 'family' => 'Caveat, cursive' ],
+            [ 'name' => 'Patrick Hand', 'label' => 'Patrick Hand (Truyện tranh)', 'weight' => '400', 'family' => '"Patrick Hand", cursive' ],
+            [ 'name' => 'Playfair Display', 'label' => 'Playfair Display (Sang trọng)', 'weight' => '900', 'family' => '"Playfair Display", serif' ],
+            [ 'name' => 'Roboto', 'label' => 'Roboto (Tiêu chuẩn)', 'weight' => '900', 'family' => 'Roboto, sans-serif' ],
         ];
         $vietnamese_fonts = apply_filters( 'nguu_lai_vietnamese_fonts', $vietnamese_fonts );
 
