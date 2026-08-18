@@ -1,0 +1,20 @@
+{
+    "name": "dps/nguu-lai",
+    "description": "WordPress Meme Generator Plugin with HTML5 Canvas, Google Login and Pure Vietnamese UI",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "DPS Media",
+            "homepage": "https://dps.media"
+        }
+    ],
+    "require": {
+        "php": ">=7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "NguuLai\\": "includes/"
+        }
+    }
+}

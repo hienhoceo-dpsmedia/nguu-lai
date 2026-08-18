@@ -1,0 +1,21 @@
+# Vendor and package managers
+/vendor/
+/node_modules/
+
+# OS and IDE files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+
+# Build files
+dist/
+*.zip
+
+# Secrets & Credentials
+.ftp
+.ftp*
+*.secret
+*.env
+
